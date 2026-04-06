@@ -10,6 +10,8 @@
     <meta property="og:image" content="photos/weixin_8df0c765_image.jpg">
     <meta property="og:type" content="website">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <!-- CloudBase SDK -->
+    <script src="https://js.cloudbase.net/sdk/1.0.0/cloudbase.js"></script>
     <style>
         * {
             margin: 0;
@@ -671,57 +673,6 @@
             }
         }
         
-        /* 管理员配置面板 */
-        .admin-config-panel {
-            position: fixed;
-            bottom: 100px;
-            right: 30px;
-            background: white;
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-            z-index: 1001;
-            display: none;
-            max-width: 350px;
-        }
-        
-        .admin-config-panel.active {
-            display: block;
-        }
-        
-        .admin-config-panel h3 {
-            color: #dc143c;
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
-        
-        .admin-config-panel p {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 15px;
-            line-height: 1.5;
-        }
-        
-        .admin-config-panel a {
-            color: #dc143c;
-        }
-        
-        .config-btn {
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-size: 13px;
-            cursor: pointer;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .config-save {
-            background: linear-gradient(135deg, #4caf50, #81c784);
-        }
-        
         /* 状态提示 */
         .status-badge {
             display: inline-block;
@@ -1020,39 +971,37 @@
         <span class="music-icon">🎵</span>
     </div>
     
-    <!-- 管理员配置面板 -->
-    <div class="admin-config-panel" id="adminConfigPanel">
-        <h3>⚙️ 管理员配置</h3>
-        <p><strong>当前状态：</strong><span id="configStatus" class="status-badge status-not-configured">未配置</span></p>
-        <p style="margin-bottom: 10px;"><strong>Token 权限要求：</strong></p>
-        <ul style="font-size: 11px; color: #666; margin-bottom: 15px; padding-left: 15px;">
-            <li>repo (完整仓库权限)</li>
-            <li>或 public_repo (仅公开仓库)</li>
-        </ul>
-        <input type="password" class="form-input" id="githubToken" placeholder="输入 GitHub Token" style="margin-bottom: 10px;">
-        <button class="config-btn config-save" onclick="saveAdminConfig()">💾 保存配置</button>
-        <button class="config-btn" onclick="toggleAdminConfig()">关闭</button>
-        <p style="margin-top: 15px;">
-            <a href="https://github.com/settings/tokens" target="_blank">👉 点击创建 Token</a>
-        </p>
-        <p style="margin-top: 10px; font-size: 11px; color: #999;">
-            ℹ️ 配置后所有宾客可直接发送，无需登录
-        </p>
-    </div>
-    
     <audio id="bgMusic" loop>
         <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
     </audio>
     
     <script>
-        // ========== 配置 ==============
-        const GITHUB_OWNER = 'geoganlle';
-        const GITHUB_REPO = 'wedding-invitation';
-        const ISSUE_LABEL_RSRP = 'RSVP';
-        const ISSUE_LABEL_WISH = 'WISH';
+        // ========== CloudBase 配置 ==============
+        const CLOUDBASE_CONFIG = {
+            env: 'cloud-env-5g1kb7epc87ee1d6',
+            anonymousAuth: true
+        };
         
-        // 管理员配置的 Token（存储在 localStorage）
-        let githubToken = localStorage.getItem('adminGithubToken') || '';
+        // 初始化 CloudBase
+        let cloudbase = null;
+        let db = null;
+        
+        function initCloudBase() {
+            try {
+                cloudbase = window.cloudbase.init({
+                    env: CLOUDBASE_CONFIG.env,
+                    anonymousAuth: CLOUDBASE_CONFIG.anonymousAuth
+                });
+                db = cloudbase.database();
+                console.log('✅ CloudBase 初始化成功');
+                return true;
+            } catch (err) {
+                console.error('❌ CloudBase 初始化失败:', err);
+                return false;
+            }
+        }
+        
+        // 全局变量
         let userCity = '未知';
         let currentPhotoIndex = 0;
         let isMusicPlaying = false;
@@ -1074,6 +1023,9 @@
         
         // 初始化
         window.addEventListener('load', () => {
+            // 初始化 CloudBase
+            const cbInit = initCloudBase();
+            
             // 加载照片
             loadGallery();
             
@@ -1083,19 +1035,8 @@
             // 加载祝福
             loadWishes();
             
-            // 检查配置状态
-            updateConfigStatus();
-            
             // 自动播放音乐
             playMusic();
-            
-            // 如果是管理员（URL 带参数），显示配置面板
-            const urlParams = new URLSearchParams(window.location.search);
-            if (urlParams.get('admin') === 'true') {
-                setTimeout(() => {
-                    toggleAdminConfig();
-                }, 1000);
-            }
         });
         
         // 加载照片长廊
@@ -1134,36 +1075,6 @@
                 document.getElementById('musicControl').classList.remove('paused');
             }
             isMusicPlaying = !isMusicPlaying;
-        }
-        
-        // 管理员配置面板
-        function toggleAdminConfig() {
-            const panel = document.getElementById('adminConfigPanel');
-            panel.classList.toggle('active');
-        }
-        
-        function updateConfigStatus() {
-            const statusEl = document.getElementById('configStatus');
-            if (githubToken) {
-                statusEl.textContent = '✅ 已配置（宾客可直接发送）';
-                statusEl.className = 'status-badge status-ready';
-            } else {
-                statusEl.textContent = '⚠️ 未配置';
-                statusEl.className = 'status-badge status-not-configured';
-            }
-        }
-        
-        function saveAdminConfig() {
-            const token = document.getElementById('githubToken').value.trim();
-            if (token) {
-                githubToken = token;
-                localStorage.setItem('adminGithubToken', token);
-                alert('✅ 配置已保存！\n\n现在所有宾客都可以直接发送 RSVP 和祝福，无需登录！');
-                updateConfigStatus();
-                toggleAdminConfig();
-            } else {
-                alert('请输入有效的 Token！');
-            }
         }
         
         // 获取用户位置
@@ -1354,70 +1265,67 @@
             }, 13000);
         }
         
-        // ========== GitHub Issues API 功能 ==========
-        async function createGitHubIssue(title, body, labels) {
-            if (!githubToken) {
-                alert('⚠️ 系统未配置，请联系管理员！');
-                return null;
+        // ========== CloudBase 数据库操作 ==========
+        
+        // 提交 RSVP
+        async function submitRSVPToCloudBase(data) {
+            if (!db) {
+                throw new Error('CloudBase 未初始化');
             }
             
             try {
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `token ${githubToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        title: title,
-                        body: body,
-                        labels: labels
-                    })
+                const collection = db.collection('rsvp');
+                const result = await collection.add({
+                    ...data,
+                    createTime: Date.now()
                 });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    return data;
-                } else {
-                    const error = await response.json();
-                    console.error('GitHub API 错误:', error);
-                    alert(`❌ 提交失败：${error.message}`);
-                    return null;
-                }
-            } catch (error) {
-                console.error('网络错误:', error);
-                alert('❌ 网络错误，请稍后重试');
-                return null;
+                return { success: true, data: result };
+            } catch (err) {
+                console.error('RSVP 提交失败:', err);
+                throw err;
             }
         }
         
-        async function getGitHubIssues(labels) {
-            if (!githubToken) {
+        // 提交祝福
+        async function submitWishToCloudBase(name, text) {
+            if (!db) {
+                throw new Error('CloudBase 未初始化');
+            }
+            
+            try {
+                const collection = db.collection('wishes');
+                const result = await collection.add({
+                    name: name || '匿名',
+                    text,
+                    createTime: Date.now()
+                });
+                return { success: true, data: result };
+            } catch (err) {
+                console.error('祝福提交失败:', err);
+                throw err;
+            }
+        }
+        
+        // 加载祝福列表
+        async function loadWishesFromCloudBase() {
+            if (!db) {
                 return [];
             }
             
             try {
-                const labelParam = labels.map(l => `label=${encodeURIComponent(l)}`).join('&');
-                const response = await fetch(`https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/issues?${labelParam}&state=all`, {
-                    headers: {
-                        'Authorization': `token ${githubToken}`,
-                    }
-                });
-                
-                if (response.ok) {
-                    const data = await response.json();
-                    return data;
-                } else {
-                    console.error('获取 Issues 失败');
-                    return [];
-                }
-            } catch (error) {
-                console.error('网络错误:', error);
+                const collection = db.collection('wishes');
+                const result = await collection
+                    .orderBy('createTime', 'desc')
+                    .limit(100)
+                    .get();
+                return result.data || [];
+            } catch (err) {
+                console.error('加载祝福失败:', err);
                 return [];
             }
         }
         
-        // ========== 祝福功能（使用 GitHub Issues） ==========
+        // ========== 祝福功能 ==========
         async function loadWishes() {
             const wishesList = document.getElementById('wishesList');
             const loading = document.getElementById('wishesLoading');
@@ -1426,10 +1334,10 @@
             wishesList.style.display = 'block';
             loading.style.display = 'block';
             
-            // 从 GitHub Issues 加载祝福
-            const issues = await getGitHubIssues([ISSUE_LABEL_WISH]);
+            // 从 CloudBase 加载祝福
+            const wishes = await loadWishesFromCloudBase();
             
-            if (issues.length === 0) {
+            if (wishes.length === 0) {
                 // 添加默认祝福
                 const defaultWishes = [
                     { name: '小明', text: '祝新人百年好合，永结同心！' },
@@ -1448,19 +1356,15 @@
                     }, Math.random() * 5000);
                 });
             } else {
-                issues.forEach(issue => {
-                    // 从 issue body 解析数据
-                    const match = issue.body.match(/祝福内容：([\s\S]*?)(?:\n\n|$)/);
-                    const text = match ? match[1].trim() : issue.body;
-                    
+                wishes.forEach(wish => {
                     const item = document.createElement('div');
                     item.className = 'wish-item';
-                    item.textContent = `💕 ${issue.user.login}：${text}`;
+                    item.textContent = `💕 ${wish.name || '匿名'}：${wish.text}`;
                     wishesList.appendChild(item);
                     
                     // 发送弹幕
                     setTimeout(() => {
-                        sendDanmaku(text, issue.user.login);
+                        sendDanmaku(wish.text, wish.name);
                     }, Math.random() * 3000);
                 });
             }
@@ -1477,40 +1381,39 @@
                 return;
             }
             
-            // 创建 GitHub Issue
-            const body = `**祝福者**: ${name || '匿名'}\n**祝福内容**：${text}\n\n---\n*自动提交于 ${new Date().toLocaleString('zh-CN')}*`;
-            const result = await createGitHubIssue(`💕 祝福 - ${name || '匿名'}`, body, [ISSUE_LABEL_WISH]);
-            
-            if (result) {
-                // 添加到显示列表
-                const wishesList = document.getElementById('wishesList');
-                const wishItem = document.createElement('div');
-                wishItem.className = 'wish-item';
-                wishItem.textContent = `💕 ${name || '匿名'}：${text}`;
-                wishesList.insertBefore(wishItem, wishesList.firstChild);
+            try {
+                // 提交到 CloudBase
+                const result = await submitWishToCloudBase(name, text);
                 
-                // 清空输入
-                document.getElementById('wishName').value = '';
-                document.getElementById('wishText').value = '';
-                
-                // 发送弹幕
-                sendDanmaku(text, name);
-                
-                // 烟花效果
-                createFirework();
-                
-                alert('✅ 祝福已发送！💕');
+                if (result.success) {
+                    // 添加到显示列表
+                    const wishesList = document.getElementById('wishesList');
+                    const wishItem = document.createElement('div');
+                    wishItem.className = 'wish-item';
+                    wishItem.textContent = `💕 ${name || '匿名'}：${text}`;
+                    wishesList.insertBefore(wishItem, wishesList.firstChild);
+                    
+                    // 清空输入
+                    document.getElementById('wishName').value = '';
+                    document.getElementById('wishText').value = '';
+                    
+                    // 发送弹幕
+                    sendDanmaku(text, name);
+                    
+                    // 烟花效果
+                    createFirework();
+                    
+                    alert('✅ 祝福已发送！💕');
+                }
+            } catch (err) {
+                console.error('发送失败:', err);
+                alert('❌ 发送失败，请检查网络连接');
             }
         }
         
-        // ========== RSVP 功能（使用 GitHub Issues） ==========
+        // ========== RSVP 功能 ==========
         async function submitRSVP(e) {
             e.preventDefault();
-            
-            if (!githubToken) {
-                alert('⚠️ 系统未配置，请联系管理员！');
-                return;
-            }
             
             const btn = document.getElementById('rsvpBtn');
             btn.disabled = true;
@@ -1522,18 +1425,28 @@
             const guests = document.getElementById('rsvpGuests').value || '1';
             const message = document.getElementById('rsvpMessage').value.trim();
             
-            // 创建 GitHub Issue
-            const body = `**姓名**: ${name}\n**手机号**: ${phone}\n**出席状态**: ${status}\n**同行人数**: ${guests}\n**位置**: ${userCity}\n**备注**: ${message || '无'}\n\n---\n*自动提交于 ${new Date().toLocaleString('zh-CN')}*`;
-            const result = await createGitHubIssue(`📋 RSVP - ${name} (${status})`, body, [ISSUE_LABEL_RSRP]);
-            
-            if (result) {
-                alert(`✅ 感谢您的回复！\n\n姓名：${name}\n我们已收到您的信息，期待与您相聚！💕`);
+            try {
+                // 提交到 CloudBase
+                const result = await submitRSVPToCloudBase({
+                    name,
+                    phone,
+                    status,
+                    guests: parseInt(guests),
+                    message,
+                    location: userCity
+                });
                 
-                e.target.reset();
-                btn.disabled = false;
-                btn.textContent = '提交回复 💕';
-                createFirework();
-            } else {
+                if (result.success) {
+                    alert(`✅ 感谢您的回复！\n\n姓名：${name}\n我们已收到您的信息，期待与您相聚！💕`);
+                    
+                    e.target.reset();
+                    btn.disabled = false;
+                    btn.textContent = '提交回复 💕';
+                    createFirework();
+                }
+            } catch (err) {
+                console.error('提交失败:', err);
+                alert('❌ 提交失败，请检查网络连接');
                 btn.disabled = false;
                 btn.textContent = '提交回复 💕';
             }
