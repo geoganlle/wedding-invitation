@@ -1,0 +1,1828 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我们要结婚啦！- 2026 年 10 月 1 日</title>
+    <meta name="description" content="诚邀您参加我们的婚礼，2026 年 10 月 1 日，甘肃省天水市百宴廷">
+    <meta property="og:title" content="我们要结婚啦！">
+    <meta property="og:description" content="2026 年 10 月 1 日，甘肃省天水市百宴廷，诚邀您的光临">
+    <meta property="og:image" content="photos/weixin_8df0c765_image.jpg">
+    <meta property="og:type" content="website">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <!-- LeanCloud SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/leancloud-storage@4.15.1/dist/av-min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        body {
+            font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 50%, #f48fb1 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* 弹幕容器 */
+        .danmaku-container {
+            position: fixed;
+            top: 60px;
+            left: 0;
+            right: 0;
+            height: 40px;
+            pointer-events: none;
+            z-index: 998;
+            overflow: hidden;
+        }
+        
+        .danmaku-item {
+            position: absolute;
+            white-space: nowrap;
+            background: rgba(220, 20, 60, 0.9);
+            color: white;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+            animation: danmakuMove linear forwards;
+        }
+        
+        @keyframes danmakuMove {
+            from { transform: translateX(100vw); }
+            to { transform: translateX(-100%); }
+        }
+        
+        /* 固定导航 */
+        .fixed-nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.98);
+            box-shadow: 0 2px 20px rgba(220, 20, 60, 0.2);
+            z-index: 1000;
+            padding: 12px 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .nav-content {
+            max-width: 500px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .nav-item {
+            color: #dc143c;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: bold;
+            padding: 8px 10px;
+            border-radius: 20px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-item:hover {
+            background: rgba(220, 20, 60, 0.1);
+            transform: translateY(-2px);
+        }
+        
+        /* 动态背景花瓣 */
+        .petal {
+            position: fixed;
+            top: -20px;
+            font-size: 20px;
+            animation: petalFall linear forwards;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        @keyframes petalFall {
+            0% {
+                transform: translateY(0) rotate(0deg) translateX(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg) translateX(100px);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            max-width: 500px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.98);
+            overflow: hidden;
+            position: relative;
+            z-index: 10;
+            margin-top: 60px;
+        }
+        
+        /* 主视觉图 */
+        .hero-section {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-image {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(to bottom, rgba(220, 20, 60, 0.4), rgba(220, 20, 60, 0.1));
+        }
+        
+        .hero-title {
+            position: absolute;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            text-align: center;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        .hero-title h1 {
+            font-size: 42px;
+            margin-bottom: 10px;
+            font-family: 'Dancing Script', cursive, "Noto Serif SC", serif;
+        }
+        
+        .hero-title p {
+            font-size: 18px;
+            opacity: 0.95;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #dc143c 0%, #ff6b8a 50%, #ff8fa3 100%);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: shimmer 3s linear infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .header .love {
+            font-size: 28px;
+            margin-bottom: 15px;
+            animation: loveBeat 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes loveBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        .header h2 {
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .header .subtitle {
+            font-size: 16px;
+            font-style: italic;
+            opacity: 0.95;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .content {
+            padding: 35px 30px;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: 24px;
+            color: #dc143c;
+            margin-bottom: 25px;
+            font-weight: bold;
+            position: relative;
+            padding-bottom: 15px;
+        }
+        
+        .section-title::after {
+            content: '💕  💕';
+            display: block;
+            font-size: 14px;
+            margin-top: 8px;
+            opacity: 0.6;
+        }
+        
+        .greeting {
+            font-size: 18px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #555;
+            line-height: 2;
+            margin-bottom: 25px;
+            text-indent: 2em;
+            text-align: justify;
+        }
+        
+        /* 倒计时 */
+        .countdown {
+            background: linear-gradient(135deg, #dc143c 0%, #ff6b8a 100%);
+            color: white;
+            text-align: center;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 20px;
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.3);
+        }
+        
+        .countdown-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            opacity: 0.9;
+        }
+        
+        .countdown-timer {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .countdown-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px 18px;
+            border-radius: 15px;
+            min-width: 65px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .countdown-number {
+            font-size: 28px;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .countdown-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        /* 婚礼信息 */
+        .info-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe4e8 50%, #ffd6e0 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .info-section::before {
+            content: '💕';
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            font-size: 40px;
+            opacity: 0.3;
+            animation: loveFloat 2s ease-in-out infinite;
+        }
+        
+        @keyframes loveFloat {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .info-item {
+            display: flex;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px dashed #ffb6c1;
+            transition: all 0.3s ease;
+        }
+        
+        .info-item:hover {
+            transform: translateX(10px);
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            padding-left: 10px;
+        }
+        
+        .info-item:last-child {
+            border-bottom: none;
+        }
+        
+        .info-icon {
+            font-size: 26px;
+            width: 40px;
+            text-align: center;
+            margin-right: 12px;
+        }
+        
+        .info-label {
+            font-weight: bold;
+            color: #333;
+            width: 70px;
+            font-size: 16px;
+        }
+        
+        .info-value {
+            color: #555;
+            flex: 1;
+            font-size: 15px;
+        }
+        
+        /* 婚礼流程时间轴 */
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0;
+            bottom: 0;
+            width: 3px;
+            background: linear-gradient(to bottom, #dc143c, #ff6b8a);
+            border-radius: 3px;
+        }
+        
+        .timeline-item {
+            position: relative;
+            padding-left: 70px;
+            margin-bottom: 25px;
+            animation: timelineSlide 0.5s ease-out;
+        }
+        
+        @keyframes timelineSlide {
+            from {
+                opacity: 0;
+                transform: translateX(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+        
+        .timeline-dot {
+            position: absolute;
+            left: 18px;
+            top: 5px;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #dc143c, #ff6b8a);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(220, 20, 60, 0.3);
+            z-index: 1;
+        }
+        
+        .timeline-time {
+            font-size: 18px;
+            font-weight: bold;
+            color: #dc143c;
+            margin-bottom: 5px;
+        }
+        
+        .timeline-event {
+            font-size: 16px;
+            color: #333;
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+        
+        .timeline-location {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 地图容器 */
+        .map-container {
+            margin: 25px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.2);
+        }
+        
+        .map-container iframe {
+            width: 100%;
+            height: 300px;
+            border: none;
+        }
+        
+        .map-title {
+            text-align: center;
+            font-size: 18px;
+            color: #dc143c;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+        
+        /* 相册 */
+        .photo-gallery {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .photo-item {
+            aspect-ratio: 1;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .photo-item:nth-child(1) {
+            grid-column: span 2;
+            aspect-ratio: 16/9;
+        }
+        
+        .photo-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .photo-item:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 30px rgba(220, 20, 60, 0.4);
+        }
+        
+        .photo-item:hover img {
+            transform: scale(1.1);
+        }
+        
+        /* 照片灯箱 */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+        
+        .lightbox.active {
+            display: flex;
+        }
+        
+        .lightbox img {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 10px;
+            object-fit: contain;
+        }
+        
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 30px;
+            font-size: 40px;
+            color: white;
+            cursor: pointer;
+            z-index: 2001;
+        }
+        
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+            padding: 20px;
+            user-select: none;
+        }
+        
+        .lightbox-prev {
+            left: 20px;
+        }
+        
+        .lightbox-next {
+            right: 20px;
+        }
+        
+        .lightbox-counter {
+            position: absolute;
+            bottom: 30px;
+            color: white;
+            font-size: 16px;
+        }
+        
+        /* 温馨提示 */
+        .tips-section {
+            background: linear-gradient(135deg, #f9f9f9 0%, #f0f0f0 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .tips-list {
+            list-style: none;
+        }
+        
+        .tips-list li {
+            font-size: 15px;
+            color: #555;
+            padding: 12px 0;
+            padding-left: 30px;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .tips-list li:hover {
+            transform: translateX(10px);
+            color: #dc143c;
+        }
+        
+        .tips-list li:before {
+            content: "💝";
+            position: absolute;
+            left: 0;
+            animation: heartBeat 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes heartBeat {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); }
+        }
+        
+        /* RSVP 表单 */
+        .rsvp-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe4e8 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.15);
+        }
+        
+        .rsvp-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        
+        .form-label {
+            font-size: 14px;
+            color: #333;
+            font-weight: bold;
+        }
+        
+        .form-input, .form-select, .form-textarea {
+            padding: 12px 15px;
+            border: 2px solid #ffb6c1;
+            border-radius: 10px;
+            font-size: 14px;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+        
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #dc143c;
+            box-shadow: 0 0 15px rgba(220, 20, 60, 0.2);
+        }
+        
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        .rsvp-btn {
+            background: linear-gradient(135deg, #dc143c, #ff6b8a);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.3);
+        }
+        
+        .rsvp-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 30px rgba(220, 20, 60, 0.5);
+        }
+        
+        /* 添加到日历 */
+        .calendar-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .calendar-btn {
+            flex: 1;
+            min-width: 100px;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .calendar-google {
+            background: #4285f4;
+            color: white;
+        }
+        
+        .calendar-apple {
+            background: #a2aaad;
+            color: white;
+        }
+        
+        .calendar-outlook {
+            background: #0078d4;
+            color: white;
+        }
+        
+        .calendar-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 交通预订 */
+        .travel-section {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-radius: 20px;
+            padding: 30px;
+            margin: 30px 0;
+            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.2);
+        }
+        
+        .travel-info {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+        
+        .travel-location {
+            font-size: 18px;
+            font-weight: bold;
+            color: #1976d2;
+            margin-bottom: 10px;
+        }
+        
+        .travel-user-location {
+            font-size: 15px;
+            color: #666;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 10px;
+        }
+        
+        .travel-btns {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+        
+        .travel-btn {
+            flex: 1;
+            min-width: 140px;
+            padding: 15px 25px;
+            border: none;
+            border-radius: 25px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        .travel-flight {
+            background: linear-gradient(135deg, #2196f3, #64b5f6);
+            color: white;
+        }
+        
+        .travel-train {
+            background: linear-gradient(135deg, #4caf50, #81c784);
+            color: white;
+        }
+        
+        .travel-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        /* 祝福墙 */
+        .wishes-section {
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe4e8 100%);
+            border-radius: 20px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+        
+        .wishes-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .wishes-list {
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .wish-item {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            font-size: 14px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 页脚 */
+        .footer {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #fff5f5 0%, #ffe4e8 100%);
+        }
+        
+        .footer-text {
+            font-size: 20px;
+            color: #dc143c;
+            font-weight: bold;
+            margin-bottom: 20px;
+            animation: textGlow 2s ease-in-out infinite;
+        }
+        
+        @keyframes textGlow {
+            0%, 100% { text-shadow: 0 0 10px rgba(220, 20, 60, 0.5); }
+            50% { text-shadow: 0 0 20px rgba(220, 20, 60, 0.8); }
+        }
+        
+        .footer-love {
+            font-size: 28px;
+            margin-bottom: 25px;
+            animation: lovePulse 1s ease-in-out infinite;
+        }
+        
+        @keyframes lovePulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        .signature {
+            text-align: center;
+            font-size: 15px;
+            color: #666;
+            margin-top: 25px;
+        }
+        
+        .signature-line {
+            display: inline-block;
+            width: 120px;
+            border-bottom: 1px solid #999;
+        }
+        
+        /* 音乐按钮 */
+        .music-btn {
+            position: fixed;
+            top: 70px;
+            right: 20px;
+            width: 55px;
+            height: 55px;
+            background: linear-gradient(135deg, #dc143c, #ff6b8a);
+            border-radius: 50%;
+            box-shadow: 0 4px 20px rgba(220, 20, 60, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 26px;
+            cursor: pointer;
+            z-index: 1000;
+            animation: musicRotate 3s linear infinite;
+            transition: all 0.3s ease;
+        }
+        
+        .music-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(220, 20, 60, 0.6);
+        }
+        
+        @keyframes musicRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .music-btn.paused {
+            animation: none;
+            background: linear-gradient(135deg, #999, #ccc);
+        }
+        
+        /* 滚动通知 */
+        .scroll-notice {
+            background: linear-gradient(135deg, #dc143c, #ff6b8a);
+            color: white;
+            padding: 10px 20px;
+            overflow: hidden;
+            white-space: nowrap;
+            position: fixed;
+            top: 50px;
+            left: 0;
+            right: 0;
+            z-index: 999;
+        }
+        
+        .scroll-text {
+            display: inline-block;
+            animation: scrollLeft 20s linear infinite;
+            font-size: 14px;
+        }
+        
+        @keyframes scrollLeft {
+            0% { transform: translateX(100%); }
+            100% { transform: translateX(-100%); }
+        }
+        
+        /* 烟花效果 */
+        .firework {
+            position: fixed;
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 999;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 30px;
+            height: 30px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #dc143c;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 响应式 */
+        @media (max-width: 480px) {
+            body {
+                padding: 0;
+            }
+            
+            .nav-item {
+                font-size: 11px;
+                padding: 6px 8px;
+            }
+            
+            .hero-image {
+                height: 350px;
+            }
+            
+            .hero-title h1 {
+                font-size: 32px;
+            }
+            
+            .content {
+                padding: 25px 20px;
+            }
+            
+            .countdown-timer {
+                gap: 8px;
+            }
+            
+            .countdown-item {
+                padding: 10px 12px;
+                min-width: 55px;
+            }
+            
+            .countdown-number {
+                font-size: 22px;
+            }
+            
+            .timeline::before {
+                left: 20px;
+            }
+            
+            .timeline-item {
+                padding-left: 50px;
+            }
+            
+            .timeline-dot {
+                left: 8px;
+                width: 24px;
+                height: 24px;
+            }
+            
+            .travel-btns {
+                flex-direction: column;
+            }
+            
+            .travel-btn {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 弹幕容器 -->
+    <div class="danmaku-container" id="danmakuContainer"></div>
+    
+    <!-- 固定导航 -->
+    <nav class="fixed-nav">
+        <div class="nav-content">
+            <a href="#home" class="nav-item">🏠 首页</a>
+            <a href="#story" class="nav-item">💕 故事</a>
+            <a href="#details" class="nav-item">📋 详情</a>
+            <a href="#timeline" class="nav-item">⏰ 流程</a>
+            <a href="#gallery" class="nav-item">📸 相册</a>
+            <a href="#map" class="nav-item">📍 地点</a>
+            <a href="#travel" class="nav-item">✈️ 交通</a>
+            <a href="#rsvp" class="nav-item">✍️ 回复</a>
+        </div>
+    </nav>
+    
+    <!-- 音乐按钮 -->
+    <div class="music-btn" onclick="toggleMusic()" title="播放/暂停音乐">🎵</div>
+    
+    <!-- 隐藏的音乐播放器 -->
+    <audio id="bgMusic" loop>
+        <source src="https://music.163.com/song/media/outer/url?id=1825724354.mp3" type="audio/mpeg">
+        您的浏览器不支持音频播放
+    </audio>
+    
+    <!-- 滚动通知 -->
+    <div class="scroll-notice">
+        <span class="scroll-text">💕 我们要结婚啦 · 2026 年 10 月 1 日 · 甘肃省天水市百宴廷 · 诚邀您的光临 · 期待您的到来 💕</span>
+    </div>
+    
+    <!-- 主视觉图 -->
+    <div class="hero-section" id="home">
+        <img src="photos/weixin_8df0c765_image.jpg" alt="我们结婚啦" class="hero-image">
+        <div class="hero-overlay"></div>
+        <div class="hero-title">
+            <h1>We're Getting Married</h1>
+            <p>2026.10.01</p>
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <div class="love">💕 💕 </div>
+            <h2>婚礼邀请函</h2>
+            <div class="subtitle">Wedding Invitation</div>
+        </div>
+        
+        <div class="content">
+            <!-- 问候 -->
+            <div class="section" id="story">
+                <div class="greeting">亲爱的朋友：</div>
+                
+                <div class="message">
+                    感谢您一直以来对我们的关爱与支持。在这美好的日子里，我们怀着无比喜悦的心情，诚挚地邀请您参加我们的婚礼，见证我们人生中最重要的时刻。
+                </div>
+                
+                <div class="message">
+                    您的到来将是我们最大的荣幸，期待与您分享这份幸福与喜悦！
+                </div>
+            </div>
+            
+            <!-- 倒计时 -->
+            <div class="countdown section">
+                <div class="countdown-title">⏰ 距离婚礼还有</div>
+                <div class="countdown-timer">
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="days">00</span>
+                        <span class="countdown-label">天</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="hours">00</span>
+                        <span class="countdown-label">时</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="minutes">00</span>
+                        <span class="countdown-label">分</span>
+                    </div>
+                    <div class="countdown-item">
+                        <span class="countdown-number" id="seconds">00</span>
+                        <span class="countdown-label">秒</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 婚礼信息 -->
+            <div class="info-section section" id="details">
+                <div class="section-title">📋 婚礼信息</div>
+                
+                <div class="info-item">
+                    <span class="info-icon">📅</span>
+                    <span class="info-label">日期</span>
+                    <span class="info-value">2026 年 10 月 1 日（星期四）</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-icon">🕐</span>
+                    <span class="info-label">时间</span>
+                    <span class="info-value">上午 10:18（吉时）</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-icon">📍</span>
+                    <span class="info-label">地点</span>
+                    <span class="info-value">甘肃省天水市 百宴廷</span>
+                </div>
+                
+                <div class="info-item">
+                    <span class="info-icon">💒</span>
+                    <span class="info-label">宴席</span>
+                    <span class="info-value">婚礼仪式 + 婚宴</span>
+                </div>
+            </div>
+            
+            <!-- 婚礼流程 -->
+            <div class="section" id="timeline">
+                <div class="section-title">⏰ 婚礼流程</div>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-dot">🎉</div>
+                        <div class="timeline-time">09:30</div>
+                        <div class="timeline-event">宾客签到</div>
+                        <div class="timeline-location">宴会厅入口</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">💒</div>
+                        <div class="timeline-time">10:18</div>
+                        <div class="timeline-event">婚礼仪式</div>
+                        <div class="timeline-location">主舞台</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">🥂</div>
+                        <div class="timeline-time">12:00</div>
+                        <div class="timeline-event">婚宴开始</div>
+                        <div class="timeline-location">宴会厅</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">🍷</div>
+                        <div class="timeline-time">13:00</div>
+                        <div class="timeline-event">敬酒环节</div>
+                        <div class="timeline-location">宴会厅</div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-dot">🎊</div>
+                        <div class="timeline-time">14:30</div>
+                        <div class="timeline-event">婚礼结束</div>
+                        <div class="timeline-location">合影留念</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 相册 -->
+            <div class="section" id="gallery">
+                <div class="section-title">📸 我们的幸福瞬间</div>
+                <div class="photo-gallery">
+                    <div class="photo-item" onclick="openLightbox(0)">
+                        <img src="photos/weixin_8df0c765_image.jpg" alt="日落海滩">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(1)">
+                        <img src="photos/weixin_a587985b_image.jpg" alt="订婚照">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(2)">
+                        <img src="photos/weixin_05f5501f_image.jpg" alt="汉服照">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(3)">
+                        <img src="photos/weixin_c3c12158_image.jpg" alt="车内自拍">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(4)">
+                        <img src="photos/weixin_021e3bd1_image.jpg" alt="餐厅合影">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(5)">
+                        <img src="photos/weixin_83cb5c7f_image.jpg" alt="户外自拍">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(6)">
+                        <img src="photos/weixin_22374e7b_image.jpg" alt="生日惊喜">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(7)">
+                        <img src="photos/weixin_513c5568_image.jpg" alt="提车纪念">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(8)">
+                        <img src="photos/weixin_7f6dec1d_image.jpg" alt="可爱瞬间">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(9)">
+                        <img src="photos/weixin_47256811_image.jpg" alt="演唱会">
+                    </div>
+                    <div class="photo-item" onclick="openLightbox(10)">
+                        <img src="photos/weixin_08d3c636_image.jpg" alt="镜子自拍">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 地图 -->
+            <div class="section" id="map">
+                <div class="section-title">📍 婚礼地点</div>
+                <div class="map-container">
+                    <iframe src="https://www.openstreetmap.org/export/embed.html?bbox=105.70,34.55,105.75,34.60&amp;layer=mapnik&amp;marker=34.575,105.725" style="width:100%;height:300px;border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                    <div style="text-align:center;padding:15px;background:#f5f5f5;">
+                        <a href="https://www.openstreetmap.org/?mlat=34.575&mlon=105.725#map=15/34.575/105.725" target="_blank" style="color:#dc143c;text-decoration:none;font-weight:bold;font-size:16px;">📍 点击打开完整地图导航</a>
+                    </div>
+                </div>
+                
+                <!-- 添加到日历 -->
+                <div style="margin-top:25px;">
+                    <div class="section-title">📅 添加到日历</div>
+                    <div class="calendar-btns">
+                        <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=婚礼&dates=20261001T101800/20261001T143000&location=甘肃省天水市百宴廷&details=诚邀您参加我们的婚礼" target="_blank" class="calendar-btn calendar-google">Google 日历</a>
+                        <a href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0APRODID:-//Wedding//CN%0ABEGIN:VEVENT%0AUID:wedding-2026%0ADTSTART:20261001T101800%0ADTEND:20261001T143000%0ASUMMARY:婚礼%0ALOCATION:甘肃省天水市百宴廷%0ADESCRIPTION:诚邀您参加我们的婚礼%0AEND:VEVENT%0AEND:VCALENDAR" class="calendar-btn calendar-apple">Apple 日历</a>
+                        <a href="https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&startdt=2026-10-01T10:18:00&enddt=2026-10-01T14:30:00&subject=婚礼&location=甘肃省天水市百宴廷&body=诚邀您参加我们的婚礼" target="_blank" class="calendar-btn calendar-outlook">Outlook</a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 交通预订 -->
+            <div class="travel-section section" id="travel">
+                <div class="section-title">✈️ 交通预订</div>
+                <div class="travel-info">
+                    <div class="travel-location">📍 婚礼地点：甘肃省天水市</div>
+                    <div class="travel-user-location" id="userLocation">
+                        <div class="loading">
+                            <div class="loading-spinner"></div>
+                            <p style="margin-top:10px;">正在获取您的位置...</p>
+                        </div>
+                    </div>
+                    <p>如果您需要从外地前来参加婚礼，可以通过以下平台预订机票或火车票</p>
+                    <p>建议提前预订，以获得更优惠的价格哦～</p>
+                </div>
+                <div class="travel-btns">
+                    <a href="javascript:void(0)" onclick="openTravelLink('flight')" class="travel-btn travel-flight">
+                        ✈️ 预订机票
+                    </a>
+                    <a href="javascript:void(0)" onclick="openTravelLink('train')" class="travel-btn travel-train">
+                        🚄 预订火车票
+                    </a>
+                </div>
+                <div style="text-align:center;margin-top:20px;font-size:14px;color:#666;">
+                    <p>💡 小提示：天水市有麦积山机场，也可选择飞往兰州中川机场后转乘高铁</p>
+                </div>
+            </div>
+            
+            <!-- 温馨提示 -->
+            <div class="tips-section section">
+                <div class="section-title">💝 温馨提示</div>
+                <ul class="tips-list">
+                    <li>请您提前安排好时间，准时出席</li>
+                    <li>如需住宿安排，请提前告知</li>
+                    <li>如有特殊饮食需求，请提前联系</li>
+                    <li>婚礼当天请着正装出席</li>
+                    <li>现场提供停车位，建议绿色出行</li>
+                </ul>
+            </div>
+            
+            <!-- RSVP 表单 -->
+            <div class="rsvp-section section" id="rsvp">
+                <div class="section-title">✍️ 请回复是否参加</div>
+                <form class="rsvp-form" onsubmit="submitRSVP(event)">
+                    <div class="form-group">
+                        <label class="form-label">您的姓名 *</label>
+                        <input type="text" class="form-input" id="rsvpName" placeholder="请输入您的姓名" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">手机号码 *</label>
+                        <input type="tel" class="form-input" id="rsvpPhone" placeholder="请输入您的手机号码" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">是否参加？ *</label>
+                        <select class="form-select" id="rsvpStatus" required>
+                            <option value="">请选择</option>
+                            <option value="attend">我会参加</option>
+                            <option value="not-attend">很遗憾不能参加</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">同行人数</label>
+                        <input type="number" class="form-input" id="rsvpGuests" placeholder="包括您自己" min="1" max="10">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">祝福语或特殊需求</label>
+                        <textarea class="form-textarea" id="rsvpMessage" placeholder="写下您的祝福语，或告知特殊饮食需求等"></textarea>
+                    </div>
+                    <button type="submit" class="rsvp-btn">提交回复 💕</button>
+                </form>
+            </div>
+            
+            <!-- 祝福墙 -->
+            <div class="wishes-section section">
+                <div class="section-title">🎊 留下您的祝福</div>
+                <div class="wishes-form">
+                    <input type="text" class="form-input" id="wishName" placeholder="您的称呼">
+                    <input type="text" class="form-input" id="wishText" placeholder="写下您的祝福语">
+                    <button class="rsvp-btn" onclick="addWish()">发送祝福 💕</button>
+                </div>
+                <div class="loading" id="wishesLoading">
+                    <div class="loading-spinner"></div>
+                    <p style="margin-top:10px;">加载祝福中...</p>
+                </div>
+                <div class="wishes-list" id="wishesList" style="display:none;">
+                </div>
+            </div>
+            
+            <!-- 结尾 -->
+            <div class="footer">
+                <div class="footer-text">期待您的光临！</div>
+                <div class="footer-love">💕 💕 💕</div>
+                <div class="signature">
+                    <div>邀请人：<span class="signature-line"></span> & <span class="signature-line"></span></div>
+                    <div style="margin-top: 15px;">2026 年<span class="signature-line"></span>月<span class="signature-line"></span>日</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 照片灯箱 -->
+    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+        <span class="lightbox-close" onclick="closeLightbox(event)">&times;</span>
+        <span class="lightbox-nav lightbox-prev" onclick="prevPhoto()">&#10094;</span>
+        <img id="lightbox-img" src="" alt="放大照片">
+        <span class="lightbox-nav lightbox-next" onclick="nextPhoto()">&#10095;</span>
+        <div class="lightbox-counter" id="lightbox-counter">1 / 11</div>
+    </div>
+    
+    <script>
+        // ========== LeanCloud 配置 ==========
+        // 请前往 https://console.leancloud.app/ 创建应用并获取以下信息
+        // 1. 创建应用
+        // 2. 在设置 -> 应用 Key 中获取 App ID 和 App Key
+        // 3. 在设置 -> 存储中开启"允许匿名访问"
+        
+        const LEANCLOUD_CONFIG = {
+            appId: 'YOUR_APP_ID',      // 替换为你的 LeanCloud App ID
+            appKey: 'YOUR_APP_KEY',    // 替换为你的 LeanCloud App Key
+            serverURL: 'https://YOUR_APP_ID.lc-cn-n1-shared.com'  // 替换为你的服务器 URL
+        };
+        
+        // 初始化 LeanCloud
+        try {
+            AV.init({
+                appId: LEANCLOUD_CONFIG.appId,
+                appKey: LEANCLOUD_CONFIG.appKey,
+                serverURL: LEANCLOUD_CONFIG.serverURL
+            });
+            
+            // 创建数据存储类
+            const Wish = AV.Object.extend('WeddingWish');
+            const RSVP = AV.Object.extend('WeddingRSVP');
+            
+            console.log('LeanCloud 初始化成功');
+        } catch (e) {
+            console.log('LeanCloud 初始化失败，将使用本地存储:', e.message);
+        }
+        
+        // 照片列表
+        const photos = [
+            'photos/weixin_8df0c765_image.jpg',
+            'photos/weixin_a587985b_image.jpg',
+            'photos/weixin_05f5501f_image.jpg',
+            'photos/weixin_c3c12158_image.jpg',
+            'photos/weixin_021e3bd1_image.jpg',
+            'photos/weixin_83cb5c7f_image.jpg',
+            'photos/weixin_22374e7b_image.jpg',
+            'photos/weixin_513c5568_image.jpg',
+            'photos/weixin_7f6dec1d_image.jpg',
+            'photos/weixin_47256811_image.jpg',
+            'photos/weixin_08d3c636_image.jpg'
+        ];
+        
+        let currentPhotoIndex = 0;
+        let userCity = '未知城市';
+        
+        // 音乐控制
+        let isPlaying = false;
+        const audio = document.getElementById('bgMusic');
+        
+        function toggleMusic() {
+            const btn = document.querySelector('.music-btn');
+            if (isPlaying) {
+                audio.pause();
+                btn.classList.add('paused');
+                btn.textContent = '🔇';
+            } else {
+                audio.play().catch(e => {
+                    console.log('音频播放失败:', e);
+                });
+                btn.classList.remove('paused');
+                btn.textContent = '🎵';
+            }
+            isPlaying = !isPlaying;
+        }
+        
+        // 页面点击自动播放音乐（首次）
+        let musicInitialized = false;
+        document.addEventListener('click', function initMusic() {
+            if (!musicInitialized && !isPlaying) {
+                audio.play().then(() => {
+                    isPlaying = true;
+                    document.querySelector('.music-btn').classList.remove('paused');
+                }).catch(() => {});
+                musicInitialized = true;
+            }
+            document.removeEventListener('click', initMusic);
+        }, { once: true });
+        
+        // 获取用户位置
+        function getUserLocation() {
+            const locationDiv = document.getElementById('userLocation');
+            
+            if (!navigator.geolocation) {
+                locationDiv.innerHTML = '<p>📍 您的浏览器不支持地理位置功能</p>';
+                return;
+            }
+            
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    // 使用反向地理编码获取城市名（使用免费 API）
+                    fetch(`https://restapi.amap.com/v3/geocode/regeo?location=${lng},${lat}&key=YOUR_AMAP_KEY`)
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.status === '1' && data.regeocode) {
+                                const city = data.regeocode.addressComponent.city || data.regeocode.addressComponent.province;
+                                userCity = city.replace('市', '');
+                                locationDiv.innerHTML = `<p>📍 检测到您的位置：<strong>${userCity}</strong></p>`;
+                            } else {
+                                locationDiv.innerHTML = '<p>📍 无法获取详细位置信息</p>';
+                            }
+                        })
+                        .catch(() => {
+                            locationDiv.innerHTML = '<p>📍 无法获取详细位置信息</p>';
+                        });
+                },
+                (error) => {
+                    console.log('位置获取失败:', error);
+                    locationDiv.innerHTML = '<p>📍 请点击浏览器地址栏右侧允许获取位置</p>';
+                },
+                {
+                    enableHighAccuracy: false,
+                    timeout: 5000,
+                    maximumAge: 300000
+                }
+            );
+        }
+        
+        // 打开交通预订链接
+        function openTravelLink(type) {
+            const date = '2026-10-01';
+            let url;
+            
+            if (type === 'flight') {
+                // 携程机票，自动填充出发地和目的地
+                url = `https://flights.ctrip.com/online/list/domestic-one-way?allianceid=0&sid=0&cityname=${encodeURIComponent(userCity)}&citycode=&cityname2=天水&citycode2=TSG&deptime=${date}`;
+            } else if (type === 'train') {
+                // 12306 火车票
+                url = `https://www.12306.cn/mormhweb/`;
+            }
+            
+            window.open(url, '_blank');
+        }
+        
+        // 花瓣雨效果
+        function createPetal() {
+            const petal = document.createElement('div');
+            petal.className = 'petal';
+            petal.textContent = ['🌸', '🌺', '🌹', '💕', '💖'][Math.floor(Math.random() * 5)];
+            petal.style.left = Math.random() * 100 + 'vw';
+            petal.style.animationDuration = (Math.random() * 5 + 5) + 's';
+            petal.style.opacity = Math.random() * 0.5 + 0.5;
+            petal.style.fontSize = (Math.random() * 15 + 15) + 'px';
+            document.body.appendChild(petal);
+            
+            setTimeout(() => {
+                petal.remove();
+            }, 10000);
+        }
+        
+        // 每 800ms 创建一个花瓣
+        setInterval(createPetal, 800);
+        
+        // 页面加载时的欢迎动画
+        window.addEventListener('load', () => {
+            for (let i = 0; i < 20; i++) {
+                setTimeout(createPetal, i * 150);
+            }
+            
+            // 获取用户位置
+            getUserLocation();
+            
+            // 加载祝福
+            loadWishes();
+        });
+        
+        // 倒计时功能
+        function updateCountdown() {
+            const weddingDate = new Date('2026-10-01T10:18:00');
+            const now = new Date();
+            const diff = weddingDate - now;
+            
+            if (diff > 0) {
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                
+                document.getElementById('days').textContent = String(days).padStart(2, '0');
+                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
+                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
+                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
+            } else {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+            }
+        }
+        
+        setInterval(updateCountdown, 1000);
+        updateCountdown();
+        
+        // 滚动动画
+        function checkScroll() {
+            const sections = document.querySelectorAll('.section');
+            sections.forEach(section => {
+                const rect = section.getBoundingClientRect();
+                const isVisible = (rect.top < window.innerHeight * 0.85);
+                if (isVisible) {
+                    section.classList.add('visible');
+                }
+            });
+        }
+        
+        window.addEventListener('scroll', checkScroll);
+        checkScroll();
+        
+        // 照片灯箱功能
+        function openLightbox(index) {
+            const lightbox = document.getElementById('lightbox');
+            const lightboxImg = document.getElementById('lightbox-img');
+            const counter = document.getElementById('lightbox-counter');
+            
+            currentPhotoIndex = index;
+            lightboxImg.src = photos[currentPhotoIndex];
+            counter.textContent = `${currentPhotoIndex + 1} / ${photos.length}`;
+            lightbox.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+        
+        function closeLightbox(event) {
+            if (event && event.target !== event.currentTarget && !event.target.classList.contains('lightbox-nav')) return;
+            
+            const lightbox = document.getElementById('lightbox');
+            lightbox.classList.remove('active');
+            document.body.style.overflow = '';
+        }
+        
+        function prevPhoto() {
+            currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
+            updateLightbox();
+        }
+        
+        function nextPhoto() {
+            currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
+            updateLightbox();
+        }
+        
+        function updateLightbox() {
+            const lightboxImg = document.getElementById('lightbox-img');
+            const counter = document.getElementById('lightbox-counter');
+            
+            lightboxImg.src = photos[currentPhotoIndex];
+            counter.textContent = `${currentPhotoIndex + 1} / ${photos.length}`;
+        }
+        
+        // 键盘控制灯箱
+        document.addEventListener('keydown', (e) => {
+            const lightbox = document.getElementById('lightbox');
+            if (!lightbox.classList.contains('active')) return;
+            
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') prevPhoto();
+            if (e.key === 'ArrowRight') nextPhoto();
+        });
+        
+        // ========== 弹幕功能 ==========
+        function sendDanmaku(text, name) {
+            const container = document.getElementById('danmakuContainer');
+            const danmaku = document.createElement('div');
+            danmaku.className = 'danmaku-item';
+            danmaku.textContent = `${name ? name + '：' : ''}${text}`;
+            danmaku.style.top = Math.random() * 30 + 'px';
+            danmaku.style.animationDuration = (Math.random() * 5 + 8) + 's';
+            container.appendChild(danmaku);
+            
+            setTimeout(() => {
+                danmaku.remove();
+            }, 13000);
+        }
+        
+        // ========== 祝福功能 ==========
+        async function loadWishes() {
+            const wishesList = document.getElementById('wishesList');
+            const loading = document.getElementById('wishesLoading');
+            
+            try {
+                // 尝试从 LeanCloud 加载
+                if (typeof AV !== 'undefined') {
+                    const query = new AV.Query(Wish);
+                    query.descending('createdAt');
+                    query.limit(50);
+                    
+                    const wishes = await query.find();
+                    wishesList.innerHTML = '';
+                    
+                    wishes.forEach(wish => {
+                        const item = document.createElement('div');
+                        item.className = 'wish-item';
+                        const name = wish.get('name') || '匿名';
+                        const text = wish.get('text');
+                        item.textContent = `💕 ${name}：${text}`;
+                        wishesList.appendChild(item);
+                        
+                        // 发送弹幕
+                        setTimeout(() => {
+                            sendDanmaku(text, name);
+                        }, Math.random() * 5000);
+                    });
+                } else {
+                    // 使用 localStorage
+                    const wishes = JSON.parse(localStorage.getItem('weddingWishes') || '[]');
+                    wishesList.innerHTML = '';
+                    
+                    wishes.forEach(wish => {
+                        const item = document.createElement('div');
+                        item.className = 'wish-item';
+                        item.textContent = `💕 ${wish.name || '匿名'}：${wish.text}`;
+                        wishesList.appendChild(item);
+                    });
+                }
+                
+                loading.style.display = 'none';
+                wishesList.style.display = 'block';
+            } catch (e) {
+                console.log('加载祝福失败:', e);
+                loading.innerHTML = '<p>加载祝福失败，请稍后重试</p>';
+            }
+        }
+        
+        async function addWish() {
+            const name = document.getElementById('wishName').value.trim();
+            const text = document.getElementById('wishText').value.trim();
+            
+            if (!text) {
+                alert('请输入祝福语！💕');
+                return;
+            }
+            
+            try {
+                // 保存到 LeanCloud
+                if (typeof AV !== 'undefined') {
+                    const wish = new Wish();
+                    wish.set('name', name);
+                    wish.set('text', text);
+                    await wish.save();
+                } else {
+                    // 保存到 localStorage
+                    const wishes = JSON.parse(localStorage.getItem('weddingWishes') || '[]');
+                    wishes.unshift({ name, text, time: new Date().toISOString() });
+                    localStorage.setItem('weddingWishes', JSON.stringify(wishes));
+                }
+                
+                // 添加到显示列表
+                const wishesList = document.getElementById('wishesList');
+                const wishItem = document.createElement('div');
+                wishItem.className = 'wish-item';
+                wishItem.textContent = `💕 ${name || '匿名'}：${text}`;
+                wishesList.insertBefore(wishItem, wishesList.firstChild);
+                
+                // 清空输入
+                document.getElementById('wishName').value = '';
+                document.getElementById('wishText').value = '';
+                
+                // 发送弹幕
+                sendDanmaku(text, name);
+                
+                // 烟花效果
+                createFirework();
+                
+                alert('祝福已发送！💕');
+            } catch (e) {
+                console.log('保存祝福失败:', e);
+                alert('保存失败，请检查网络或配置');
+            }
+        }
+        
+        // ========== RSVP 功能 ==========
+        async function submitRSVP(e) {
+            e.preventDefault();
+            
+            const name = document.getElementById('rsvpName').value.trim();
+            const phone = document.getElementById('rsvpPhone').value.trim();
+            const status = document.getElementById('rsvpStatus').value;
+            const guests = document.getElementById('rsvpGuests').value || '1';
+            const message = document.getElementById('rsvpMessage').value.trim();
+            
+            try {
+                // 保存到 LeanCloud
+                if (typeof AV !== 'undefined') {
+                    const rsvp = new RSVP();
+                    rsvp.set('name', name);
+                    rsvp.set('phone', phone);
+                    rsvp.set('status', status);
+                    rsvp.set('guests', parseInt(guests));
+                    rsvp.set('message', message);
+                    rsvp.set('location', userCity);
+                    await rsvp.save();
+                } else {
+                    // 保存到 localStorage
+                    const rsvps = JSON.parse(localStorage.getItem('weddingRSVP') || '[]');
+                    rsvps.push({
+                        name,
+                        phone,
+                        status,
+                        guests: parseInt(guests),
+                        message,
+                        location: userCity,
+                        time: new Date().toISOString()
+                    });
+                    localStorage.setItem('weddingRSVP', JSON.stringify(rsvps));
+                }
+                
+                alert(`✅ 感谢您的回复！\n\n姓名：${name}\n我们已收到您的信息，期待与您相聚！💕`);
+                
+                e.target.reset();
+                createFirework();
+            } catch (e) {
+                console.log('保存 RSVP 失败:', e);
+                alert('保存失败，请检查网络或配置');
+            }
+        }
+        
+        // 烟花效果
+        function createFirework() {
+            const colors = ['#dc143c', '#ff6b8a', '#ffd700', '#ff69b4', '#9370db'];
+            
+            for (let i = 0; i < 30; i++) {
+                const firework = document.createElement('div');
+                firework.className = 'firework';
+                firework.style.background = colors[Math.floor(Math.random() * colors.length)];
+                firework.style.left = '50%';
+                firework.style.top = '50%';
+                document.body.appendChild(firework);
+                
+                const angle = (i / 30) * 360;
+                const velocity = Math.random() * 100 + 50;
+                const vx = Math.cos(angle * Math.PI / 180) * velocity;
+                const vy = Math.sin(angle * Math.PI / 180) * velocity;
+                
+                let x = 0, y = 0, opacity = 1;
+                
+                const animate = () => {
+                    x += vx * 0.1;
+                    y += vy * 0.1;
+                    opacity -= 0.02;
+                    
+                    firework.style.transform = `translate(${x}px, ${y}px)`;
+                    firework.style.opacity = opacity;
+                    
+                    if (opacity > 0) {
+                        requestAnimationFrame(animate);
+                    } else {
+                        firework.remove();
+                    }
+                };
+                
+                animate();
+            }
+        }
+        
+        // 点击页面创建小爱心
+        document.addEventListener('click', (e) => {
+            if (e.target.closest('.photo-item') || e.target.closest('.lightbox')) return;
+            
+            const heart = document.createElement('div');
+            heart.textContent = '💕';
+            heart.style.position = 'fixed';
+            heart.style.left = e.clientX + 'px';
+            heart.style.top = e.clientY + 'px';
+            heart.style.fontSize = '20px';
+            heart.style.pointerEvents = 'none';
+            heart.style.zIndex = '9999';
+            heart.style.animation = 'heartPop 1s ease-out forwards';
+            document.body.appendChild(heart);
+            
+            setTimeout(() => heart.remove(), 1000);
+        });
+        
+        // 添加爱心弹出动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes heartPop {
+                0% { transform: scale(0.5); opacity: 1; }
+                100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
