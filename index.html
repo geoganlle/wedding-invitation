@@ -671,18 +671,8 @@
             }
         }
         
-        /* 烟花 */
-        .firework {
-            position: fixed;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-        }
-        
-        /* 配置面板 */
-        .config-panel {
+        /* 管理员配置面板 */
+        .admin-config-panel {
             position: fixed;
             bottom: 100px;
             right: 30px;
@@ -695,24 +685,24 @@
             max-width: 350px;
         }
         
-        .config-panel.active {
+        .admin-config-panel.active {
             display: block;
         }
         
-        .config-panel h3 {
+        .admin-config-panel h3 {
             color: #dc143c;
             margin-bottom: 15px;
             font-size: 16px;
         }
         
-        .config-panel p {
+        .admin-config-panel p {
             font-size: 12px;
             color: #666;
             margin-bottom: 15px;
             line-height: 1.5;
         }
         
-        .config-panel a {
+        .admin-config-panel a {
             color: #dc143c;
         }
         
@@ -730,6 +720,31 @@
         
         .config-save {
             background: linear-gradient(135deg, #4caf50, #81c784);
+        }
+        
+        /* 状态提示 */
+        .status-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        .status-ready {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status-not-configured {
+            background: #fff3cd;
+            color: #856404;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
         }
         
         /* 页脚 */
@@ -1005,20 +1020,23 @@
         <span class="music-icon">🎵</span>
     </div>
     
-    <!-- 配置面板 -->
-    <div class="config-panel" id="configPanel">
-        <h3>⚙️ GitHub 配置</h3>
-        <p>要启用 RSVP 和弹幕存储功能，需要配置 GitHub Token。</p>
+    <!-- 管理员配置面板 -->
+    <div class="admin-config-panel" id="adminConfigPanel">
+        <h3>⚙️ 管理员配置</h3>
+        <p><strong>当前状态：</strong><span id="configStatus" class="status-badge status-not-configured">未配置</span></p>
         <p style="margin-bottom: 10px;"><strong>Token 权限要求：</strong></p>
         <ul style="font-size: 11px; color: #666; margin-bottom: 15px; padding-left: 15px;">
             <li>repo (完整仓库权限)</li>
             <li>或 public_repo (仅公开仓库)</li>
         </ul>
         <input type="password" class="form-input" id="githubToken" placeholder="输入 GitHub Token" style="margin-bottom: 10px;">
-        <button class="config-btn config-save" onclick="saveConfig()">保存配置</button>
-        <button class="config-btn" onclick="toggleConfig()">关闭</button>
+        <button class="config-btn config-save" onclick="saveAdminConfig()">💾 保存配置</button>
+        <button class="config-btn" onclick="toggleAdminConfig()">关闭</button>
         <p style="margin-top: 15px;">
             <a href="https://github.com/settings/tokens" target="_blank">👉 点击创建 Token</a>
+        </p>
+        <p style="margin-top: 10px; font-size: 11px; color: #999;">
+            ℹ️ 配置后所有宾客可直接发送，无需登录
         </p>
     </div>
     
@@ -1033,7 +1051,8 @@
         const ISSUE_LABEL_RSRP = 'RSVP';
         const ISSUE_LABEL_WISH = 'WISH';
         
-        let githubToken = localStorage.getItem('githubToken') || '';
+        // 管理员配置的 Token（存储在 localStorage）
+        let githubToken = localStorage.getItem('adminGithubToken') || '';
         let userCity = '未知';
         let currentPhotoIndex = 0;
         let isMusicPlaying = false;
@@ -1064,15 +1083,19 @@
             // 加载祝福
             loadWishes();
             
-            // 检查配置
-            if (!githubToken) {
-                setTimeout(() => {
-                    toggleConfig();
-                }, 2000);
-            }
+            // 检查配置状态
+            updateConfigStatus();
             
             // 自动播放音乐
             playMusic();
+            
+            // 如果是管理员（URL 带参数），显示配置面板
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('admin') === 'true') {
+                setTimeout(() => {
+                    toggleAdminConfig();
+                }, 1000);
+            }
         });
         
         // 加载照片长廊
@@ -1113,19 +1136,31 @@
             isMusicPlaying = !isMusicPlaying;
         }
         
-        // 配置面板
-        function toggleConfig() {
-            const panel = document.getElementById('configPanel');
+        // 管理员配置面板
+        function toggleAdminConfig() {
+            const panel = document.getElementById('adminConfigPanel');
             panel.classList.toggle('active');
         }
         
-        function saveConfig() {
+        function updateConfigStatus() {
+            const statusEl = document.getElementById('configStatus');
+            if (githubToken) {
+                statusEl.textContent = '✅ 已配置（宾客可直接发送）';
+                statusEl.className = 'status-badge status-ready';
+            } else {
+                statusEl.textContent = '⚠️ 未配置';
+                statusEl.className = 'status-badge status-not-configured';
+            }
+        }
+        
+        function saveAdminConfig() {
             const token = document.getElementById('githubToken').value.trim();
             if (token) {
                 githubToken = token;
-                localStorage.setItem('githubToken', token);
-                alert('✅ 配置已保存！');
-                toggleConfig();
+                localStorage.setItem('adminGithubToken', token);
+                alert('✅ 配置已保存！\n\n现在所有宾客都可以直接发送 RSVP 和祝福，无需登录！');
+                updateConfigStatus();
+                toggleAdminConfig();
             } else {
                 alert('请输入有效的 Token！');
             }
@@ -1322,8 +1357,7 @@
         // ========== GitHub Issues API 功能 ==========
         async function createGitHubIssue(title, body, labels) {
             if (!githubToken) {
-                alert('⚠️ 请先配置 GitHub Token！点击右下角⚙️按钮进行配置。');
-                toggleConfig();
+                alert('⚠️ 系统未配置，请联系管理员！');
                 return null;
             }
             
@@ -1474,8 +1508,7 @@
             e.preventDefault();
             
             if (!githubToken) {
-                alert('⚠️ 请先配置 GitHub Token！点击右下角⚙️按钮进行配置。');
-                toggleConfig();
+                alert('⚠️ 系统未配置，请联系管理员！');
                 return;
             }
             
