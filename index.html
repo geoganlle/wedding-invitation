@@ -1,1522 +1,776 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我们要结婚啦！- 2026 年 10 月 1 日</title>
-    <meta name="description" content="诚邀您参加我们的婚礼，2026 年 10 月 1 日，甘肃省天水市百宴廷">
-    <meta property="og:title" content="我们要结婚啦！">
-    <meta property="og:description" content="2026 年 10 月 1 日，甘肃省天水市百宴廷，诚邀您的光临">
-    <meta property="og:image" content="photos/weixin_8df0c765_image.jpg">
-    <meta property="og:type" content="website">
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@400;700&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-    <!-- CloudBase SDK -->
-    <script src="https://js.cloudbase.net/sdk/1.0.0/cloudbase.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        html {
-            scroll-behavior: smooth;
-        }
-        
-        body {
-            font-family: "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
-            background: linear-gradient(135deg, #fce4ec 0%, #f8bbd9 50%, #f48fb1 100%);
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
-        
-        /* 弹幕容器 */
-        .danmaku-container {
-            position: fixed;
-            top: 60px;
-            left: 0;
-            right: 0;
-            height: 40px;
-            pointer-events: none;
-            z-index: 998;
-            overflow: hidden;
-        }
-        
-        .danmaku-item {
-            position: absolute;
-            white-space: nowrap;
-            background: rgba(220, 20, 60, 0.9);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-            animation: danmakuMove linear forwards;
-        }
-        
-        @keyframes danmakuMove {
-            from { transform: translateX(100vw); }
-            to { transform: translateX(-100%); }
-        }
-        
-        /* 固定导航 */
-        .fixed-nav {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: rgba(255, 255, 255, 0.98);
-            box-shadow: 0 2px 20px rgba(220, 20, 60, 0.2);
-            z-index: 1000;
-            padding: 12px 20px;
-            backdrop-filter: blur(10px);
-        }
-        
-        .nav-content {
-            max-width: 500px;
-            margin: 0 auto;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 8px;
-        }
-        
-        .nav-item {
-            color: #dc143c;
-            text-decoration: none;
-            font-size: 13px;
-            font-weight: bold;
-            padding: 8px 10px;
-            border-radius: 20px;
-            transition: all 0.3s;
-        }
-        
-        .nav-item:hover {
-            background: rgba(220, 20, 60, 0.1);
-            transform: translateY(-2px);
-        }
-        
-        /* 主视觉 */
-        .hero {
-            margin-top: 60px;
-            position: relative;
-            text-align: center;
-            padding: 80px 20px;
-            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-        }
-        
-        .hero-img {
-            width: 100%;
-            max-width: 600px;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 20px;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.2);
-            margin-bottom: 30px;
-        }
-        
-        .hero h1 {
-            font-family: "Dancing Script", cursive;
-            font-size: 48px;
-            color: #dc143c;
-            margin-bottom: 15px;
-        }
-        
-        .hero p {
-            font-size: 18px;
-            color: #666;
-            margin-bottom: 10px;
-        }
-        
-        .hero-date {
-            font-size: 24px;
-            font-weight: bold;
-            color: #dc143c;
-            margin-top: 15px;
-        }
-        
-        /* 通用区块 */
-        .section {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 40px 20px;
-            opacity: 0;
-            transform: translateY(30px);
-            transition: all 0.6s ease;
-        }
-        
-        .section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        
-        .section-title {
-            text-align: center;
-            font-size: 28px;
-            font-weight: bold;
-            color: #dc143c;
-            margin-bottom: 30px;
-            position: relative;
-        }
-        
-        .section-title:after {
-            content: "💕";
-            display: block;
-            font-size: 24px;
-            margin-top: 10px;
-        }
-        
-        /* 倒计时 */
-        .countdown-section {
-            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-            border-radius: 20px;
-            margin: 30px auto;
-            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.15);
-        }
-        
-        .countdown {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        
-        .countdown-item {
-            background: linear-gradient(135deg, #dc143c, #ff6b8a);
-            color: white;
-            padding: 20px;
-            border-radius: 15px;
-            min-width: 80px;
-            text-align: center;
-            box-shadow: 0 5px 15px rgba(220, 20, 60, 0.3);
-        }
-        
-        .countdown-number {
-            font-size: 36px;
-            font-weight: bold;
-            display: block;
-        }
-        
-        .countdown-label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        /* 婚礼信息 */
-        .info-section {
-            background: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.7));
-            border-radius: 20px;
-            padding: 30px;
-            margin: 30px auto;
-            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.15);
-        }
-        
-        .info-item {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid rgba(220, 20, 60, 0.1);
-        }
-        
-        .info-item:last-child {
-            border-bottom: none;
-        }
-        
-        .info-icon {
-            font-size: 24px;
-            margin-right: 15px;
-            width: 30px;
-            text-align: center;
-        }
-        
-        .info-label {
-            font-weight: bold;
-            color: #666;
-            margin-right: 10px;
-            min-width: 60px;
-        }
-        
-        .info-value {
-            color: #333;
-            flex: 1;
-        }
-        
-        /* 时间轴 */
-        .timeline {
-            position: relative;
-            padding: 20px 0;
-        }
-        
-        .timeline:before {
-            content: "";
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 3px;
-            height: 100%;
-            background: linear-gradient(180deg, #dc143c, #ff6b8a);
-        }
-        
-        .timeline-item {
-            position: relative;
-            margin: 30px 0;
-            text-align: center;
-        }
-        
-        .timeline-dot {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 40px;
-            height: 40px;
-            background: white;
-            border: 4px solid #dc143c;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            z-index: 1;
-        }
-        
-        .timeline-time {
-            font-size: 18px;
-            font-weight: bold;
-            color: #dc143c;
-            margin-bottom: 8px;
-        }
-        
-        .timeline-event {
-            font-size: 16px;
-            color: #333;
-            margin-bottom: 5px;
-        }
-        
-        .timeline-location {
-            font-size: 14px;
-            color: #666;
-        }
-        
-        /* 照片长廊 */
-        .gallery {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            padding: 20px 0;
-        }
-        
-        .photo-item {
-            aspect-ratio: 1;
-            overflow: hidden;
-            border-radius: 15px;
-            cursor: pointer;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-            transition: transform 0.3s;
-        }
-        
-        .photo-item:hover {
-            transform: scale(1.05);
-        }
-        
-        .photo-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        
-        /* 灯箱 */
-        .lightbox {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0,0,0,0.9);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            z-index: 2000;
-            padding: 20px;
-        }
-        
-        .lightbox.active {
-            display: flex;
-        }
-        
-        .lightbox-img {
-            max-width: 90%;
-            max-height: 90vh;
-            object-fit: contain;
-            border-radius: 10px;
-        }
-        
-        .lightbox-close {
-            position: absolute;
-            top: 20px;
-            right: 30px;
-            font-size: 40px;
-            color: white;
-            cursor: pointer;
-        }
-        
-        .lightbox-nav {
-            position: absolute;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 40px;
-            color: white;
-            cursor: pointer;
-            padding: 20px;
-        }
-        
-        .lightbox-prev {
-            left: 20px;
-        }
-        
-        .lightbox-next {
-            right: 20px;
-        }
-        
-        .lightbox-counter {
-            position: absolute;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: 16px;
-        }
-        
-        /* 地图 */
-        .map-section {
-            background: white;
-            border-radius: 20px;
-            padding: 20px;
-            margin: 30px auto;
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-        }
-        
-        .map-frame {
-            width: 100%;
-            height: 400px;
-            border: none;
-            border-radius: 15px;
-        }
-        
-        /* RSVP 表单 */
-        .rsvp-section {
-            background: linear-gradient(135deg, #fff5f5 0%, #ffe4e8 100%);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 30px auto;
-            box-shadow: 0 8px 25px rgba(220, 20, 60, 0.15);
-        }
-        
-        .rsvp-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .form-label {
-            font-size: 14px;
-            color: #333;
-            font-weight: bold;
-        }
-        
-        .form-input, .form-select, .form-textarea {
-            padding: 12px 15px;
-            border: 2px solid #ffb6c1;
-            border-radius: 10px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: all 0.3s;
-        }
-        
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
-            outline: none;
-            border-color: #dc143c;
-            box-shadow: 0 0 15px rgba(220, 20, 60, 0.2);
-        }
-        
-        .form-textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        .rsvp-btn {
-            background: linear-gradient(135deg, #dc143c, #ff6b8a);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.3);
-        }
-        
-        .rsvp-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(220, 20, 60, 0.5);
-        }
-        
-        .rsvp-btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-        
-        /* 添加到日历 */
-        .calendar-btns {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .calendar-btn {
-            flex: 1;
-            min-width: 100px;
-            padding: 12px 15px;
-            border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: center;
-            text-decoration: none;
-            display: inline-block;
-            color: white;
-        }
-        
-        .calendar-google {
-            background: #4285f4;
-        }
-        
-        .calendar-apple {
-            background: #a2aaad;
-        }
-        
-        .calendar-outlook {
-            background: #0078d4;
-        }
-        
-        .calendar-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-        }
-        
-        /* 交通预订 */
-        .travel-section {
-            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 30px auto;
-            box-shadow: 0 8px 25px rgba(33, 150, 243, 0.15);
-        }
-        
-        .travel-btns {
-            display: flex;
-            gap: 15px;
-            margin-top: 20px;
-            flex-wrap: wrap;
-        }
-        
-        .travel-btn {
-            flex: 1;
-            min-width: 120px;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 15px;
-            font-size: 15px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            color: white;
-        }
-        
-        .travel-flight {
-            background: linear-gradient(135deg, #2196f3, #64b5f6);
-        }
-        
-        .travel-train {
-            background: linear-gradient(135deg, #4caf50, #81c784);
-        }
-        
-        .travel-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
-        }
-        
-        #userLocation {
-            margin-top: 15px;
-            padding: 10px;
-            background: rgba(255,255,255,0.5);
-            border-radius: 10px;
-            font-size: 14px;
-        }
-        
-        /* 祝福墙 */
-        .wishes-section {
-            background: linear-gradient(135deg, #fff9c4 0%, #fff59d 100%);
-            border-radius: 20px;
-            padding: 30px;
-            margin: 30px auto;
-            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.15);
-        }
-        
-        .wish-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 30px;
-        }
-        
-        .wishes-list {
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 15px;
-            background: rgba(255,255,255,0.7);
-            border-radius: 15px;
-        }
-        
-        .wish-item {
-            padding: 15px;
-            background: white;
-            border-radius: 10px;
-            margin-bottom: 10px;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
-            animation: wishSlide 0.5s ease;
-        }
-        
-        @keyframes wishSlide {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-        
-        .wish-btn {
-            background: linear-gradient(135deg, #ff9800, #ffb74d);
-            color: white;
-            border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 20px rgba(255, 152, 0, 0.3);
-        }
-        
-        .wish-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 30px rgba(255, 152, 0, 0.5);
-        }
-        
-        /* 音乐控制 */
-        .music-control {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, #dc143c, #ff6b8a);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            box-shadow: 0 5px 20px rgba(220, 20, 60, 0.4);
-            z-index: 1000;
-            animation: musicRotate 3s linear infinite;
-        }
-        
-        .music-control.paused {
-            animation-play-state: paused;
-        }
-        
-        @keyframes musicRotate {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-        
-        .music-icon {
-            font-size: 24px;
-        }
-        
-        /* 花瓣动画 */
-        .petal {
-            position: fixed;
-            top: -50px;
-            pointer-events: none;
-            z-index: 999;
-            animation: petalFall linear forwards;
-        }
-        
-        @keyframes petalFall {
-            to {
-                transform: translateY(100vh) rotate(720deg);
-            }
-        }
-        
-        /* 状态提示 */
-        .status-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            margin-top: 10px;
-        }
-        
-        .status-ready {
-            background: #d4edda;
-            color: #155724;
-        }
-        
-        .status-not-configured {
-            background: #fff3cd;
-            color: #856404;
-        }
-        
-        .status-error {
-            background: #f8d7da;
-            color: #721c24;
-        }
-        
-        /* 页脚 */
-        .footer {
-            text-align: center;
-            padding: 30px 20px;
-            color: #dc143c;
-            font-size: 14px;
-        }
-        
-        /* 响应式 */
-        @media (max-width: 600px) {
-            .nav-content {
-                gap: 5px;
-            }
-            
-            .nav-item {
-                font-size: 11px;
-                padding: 6px 8px;
-            }
-            
-            .hero h1 {
-                font-size: 36px;
-            }
-            
-            .countdown-item {
-                min-width: 60px;
-                padding: 15px;
-            }
-            
-            .countdown-number {
-                font-size: 28px;
-            }
-            
-            .timeline:before {
-                left: 20px;
-            }
-            
-            .timeline-dot {
-                left: 20px;
-            }
-            
-            .timeline-item {
-                padding-left: 50px;
-                text-align: left;
-            }
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="theme-color" content="#f2ecdf">
+
+  <!--
+    ==================== 微信 / 社交分享 OG 配置 ====================
+    部署前请替换下面 4 个绝对 HTTPS 地址：
+    1. og:url：页面最终公网地址
+    2. og:image：封面图公网地址，建议 1200×630 或更大
+    3. twitter:image：通常与 og:image 相同
+    4. canonical：页面最终公网地址
+  -->
+  <link rel="canonical" href="https://geoganlle.github.io/wedding-invitation/">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://geoganlle.github.io/wedding-invitation/">
+  <meta property="og:title" content="顾振刚 &amp; 赵国艳｜我们的婚礼请柬">
+  <meta property="og:description" content="2026年10月1日，天水百宴廷宴会中心。邀请你来见证顾振刚与赵国艳在山野花环前的婚礼，请你来见证。">
+  <meta property="og:image" content="https://geoganlle.github.io/wedding-invitation/assets/photos/photo-43.jpg">
+  <meta property="og:image:alt" content="顾振刚与赵国艳婚礼封面照片">
+  <meta property="og:image:width" content="1600">
+  <meta property="og:image:height" content="1067">
+  <meta property="og:site_name" content="顾振刚 &amp; 赵国艳的婚礼">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="顾振刚 &amp; 赵国艳｜我们的婚礼请柬">
+  <meta name="twitter:description" content="2026年10月1日，天水百宴廷宴会中心。邀请你来见证我们的婚礼。">
+  <meta name="twitter:image" content="https://geoganlle.github.io/wedding-invitation/assets/photos/photo-43.jpg">
+
+  <title>顾振刚 &amp; 赵国艳｜我们的婚礼请柬</title>
+  <style>
+    @font-face { font-family: "WeddingKaiti"; src: url("./fonts/WeddingKaiti-subset.ttf") format("truetype"); font-display: swap; }
+    @font-face { font-family: "WeddingSans"; src: url("./fonts/WeddingSans-subset.ttf") format("opentype"); font-display: swap; }
+    /* ==================== 基础设计变量 ==================== */
+    :root {
+      --paper: #f2ecdf;
+      --paper-deep: #e8dece;
+      --ink: #40342b;
+      --muted: #927c66;
+      --accent: #a46f3d;
+      --line: #d8c8b1;
+      --white: #fffdf8;
+      --shadow: 0 14px 38px rgba(73, 48, 25, .10);
+      --serif: "WeddingKaiti", "LXGW WenKai", Georgia, "Songti SC", STSong, serif;
+      --sans: "WeddingSans", -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; background: var(--paper); }
+    body {
+      margin: 0;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at 20% 10%, rgba(255,255,255,.38), transparent 24rem),
+        radial-gradient(circle at 90% 42%, rgba(198,164,120,.10), transparent 25rem),
+        var(--paper);
+      font-family: var(--sans);
+      overflow-x: hidden;
+    }
+    body.modal-open { overflow: hidden; }
+    img { max-width: 100%; }
+    a { color: inherit; }
+    button { font: inherit; }
+
+    .page {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+      overflow: hidden;
+      background: rgba(242,236,223,.88);
+      box-shadow: 0 0 60px rgba(68, 43, 22, .08);
+    }
+
+    /* ==================== 通用排版 ==================== */
+    .eyebrow {
+      margin: 0 0 1rem;
+      color: var(--accent);
+      font-size: .70rem;
+      letter-spacing: .32em;
+      text-transform: uppercase;
+    }
+    .serif { font-family: var(--serif); }
+    .section-wrap { padding: 0 clamp(1.1rem, 5vw, 5rem); }
+    .section-rule {
+      height: 1px;
+      margin: 0;
+      border: 0;
+      background: var(--line);
+    }
+    .small-note { color: var(--muted); font-size: .78rem; line-height: 1.9; }
+
+    /* ==================== ① 封面头图 ==================== */
+    .cover {
+      position: relative;
+      min-height: min(88svh, 760px);
+      display: grid;
+      align-items: end;
+      isolation: isolate;
+      color: #fff;
+      background: #78816d;
+    }
+    .cover::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: -1;
+      background: linear-gradient(180deg, rgba(30,20,12,.08) 20%, rgba(20,12,7,.70) 100%);
+    }
+    .cover-photo {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 52%;
+    }
+    .cover-copy {
+      padding: 3rem clamp(1.3rem, 7vw, 6rem) 3.7rem;
+      text-shadow: 0 3px 24px rgba(0,0,0,.35);
+    }
+    .cover h1 {
+      max-width: 900px;
+      margin: 0 0 .9rem;
+      font: 400 clamp(2.6rem, 9vw, 6.5rem)/1.15 var(--serif);
+      letter-spacing: .06em;
+    }
+    .cover-subtitle {
+      margin: 0;
+      font-size: clamp(.85rem, 2vw, 1.05rem);
+      letter-spacing: .20em;
+    }
+    .cover-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .55rem;
+      margin-top: 1.5rem;
+    }
+    .cover-meta span {
+      padding: .5rem .78rem;
+      border: 1px solid rgba(255,255,255,.65);
+      border-radius: 999px;
+      background: rgba(34,22,13,.20);
+      font-size: .75rem;
+      letter-spacing: .08em;
+      backdrop-filter: blur(5px);
+    }
+
+    /* ==================== ② 核心信息 + 手绘甜点 ==================== */
+    .info-spread {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(18rem, .75fr);
+      gap: clamp(2rem, 7vw, 7rem);
+      align-items: end;
+      padding-top: clamp(3.5rem, 8vw, 7rem);
+      padding-bottom: clamp(3rem, 7vw, 6rem);
+    }
+    .info-copy h2 {
+      margin: 0 0 1.2rem;
+      font: 400 clamp(2.2rem, 5vw, 4.4rem)/1.25 var(--serif);
+      letter-spacing: .04em;
+    }
+    .info-copy p {
+      max-width: 38rem;
+      margin: 0;
+      color: var(--muted);
+      font-size: .96rem;
+      line-height: 2.05;
+    }
+    .info-details {
+      padding-top: 1.4rem;
+      border-top: 1px solid var(--accent);
+    }
+    .detail-row {
+      display: grid;
+      grid-template-columns: 5.2rem 1fr;
+      gap: 1rem;
+      padding: .9rem 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .detail-label { color: var(--accent); font-size: .72rem; letter-spacing: .16em; }
+    .detail-value { font-size: .91rem; line-height: 1.8; }
+    .map-button {
+      display: inline-flex;
+      align-items: center;
+      gap: .45rem;
+      margin-top: 1.1rem;
+      padding: .65rem 1rem;
+      border-radius: 999px;
+      color: var(--white);
+      background: var(--ink);
+      text-decoration: none;
+      font-size: .78rem;
+    }
+    .map-button::after { content: "↗"; font-size: 1rem; }
+    .dessert-doodle {
+      width: min(100%, 12rem);
+      margin: 1.4rem auto 0;
+      color: var(--accent);
+      opacity: .9;
+    }
+
+    /* ==================== ③ 倒计时 / 章节导语 ==================== */
+    .story-intro {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(15rem, .75fr);
+      gap: 2.5rem;
+      align-items: end;
+      padding: 2.2rem 0 2.4rem;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .story-intro h2 {
+      margin: 0;
+      font: 400 clamp(2rem, 4.7vw, 4.1rem)/1.2 var(--serif);
+    }
+    .story-intro p { margin: .8rem 0 0; color: var(--muted); line-height: 1.9; }
+    .countdown {
+      padding: 1rem 0 0;
+      border-top: 1px solid var(--accent);
+    }
+    .countdown-title { margin: 0 0 .9rem; color: var(--accent); font-size: .7rem; letter-spacing: .23em; }
+    .countdown-grid { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .count-item { text-align: center; border-left: 1px solid var(--line); }
+    .count-item:first-child { border-left: 0; }
+    .count-item strong { display: block; font: 400 clamp(1.5rem, 3vw, 2.5rem)/1.2 var(--serif); }
+    .count-item span { color: var(--muted); font-size: .68rem; }
+
+    /* ==================== 故事章节 ==================== */
+    .chapter {
+      padding: clamp(3.8rem, 8vw, 7rem) 0 0;
+    }
+    .chapter-heading {
+      display: grid;
+      grid-template-columns: 5.2rem minmax(0, 1fr) minmax(12rem, .7fr);
+      gap: 1rem;
+      align-items: end;
+      padding-bottom: 1.3rem;
+      border-bottom: 1px solid var(--line);
+    }
+    .chapter-number { color: var(--accent); font: 400 1.4rem/1 var(--serif); }
+    .chapter-heading h3 { margin: 0; font: 400 clamp(1.8rem, 4vw, 3.5rem)/1.2 var(--serif); }
+    .chapter-heading p { margin: 0; color: var(--muted); font-size: .78rem; line-height: 1.8; }
+    .chapter-lead {
+      max-width: 45rem;
+      margin: 1.3rem 0 1.6rem;
+      color: var(--muted);
+      font-size: .92rem;
+      line-height: 2;
+    }
+
+    /* 报纸式栅格：卡片通过 --span 控制跨栏比例 */
+    .editorial-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: clamp(.55rem, 1.8vw, 1.1rem);
+      align-items: stretch;
+    }
+    .tile {
+      position: relative;
+      grid-column: span var(--span, 6);
+      min-height: 10rem;
+      margin: 0;
+      overflow: hidden;
+      border-radius: .45rem;
+      background: var(--paper-deep);
+      box-shadow: var(--shadow);
+      opacity: 0;
+      transform: translateY(1.4rem);
+      transition: opacity .7s ease, transform .7s ease;
+    }
+    .tile.is-visible { opacity: 1; transform: translateY(0); }
+    .tile img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: inherit;
+      object-fit: cover;
+      transition: transform .8s ease, filter .5s ease;
+    }
+    .tile:hover img { transform: scale(1.035); filter: saturate(.92); }
+    .tile figcaption {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      padding: 2.8rem .8rem .7rem;
+      color: #fff;
+      background: linear-gradient(transparent, rgba(24,15,9,.72));
+      font-size: .68rem;
+      letter-spacing: .12em;
+      opacity: .9;
+    }
+    .tile figcaption span { float: right; }
+    .tile--wide { aspect-ratio: 2.05 / 1; }
+    .tile--half { aspect-ratio: 1.35 / 1; }
+    .tile--third { aspect-ratio: 1 / 1.08; }
+    .tile--portrait { aspect-ratio: .78 / 1; }
+    .tile--panorama { grid-column: 1 / -1; aspect-ratio: 2.65 / 1; }
+    .text-card {
+      grid-column: span var(--span, 4);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 10rem;
+      padding: clamp(1rem, 3vw, 2rem);
+      border-top: 1px solid var(--accent);
+      border-bottom: 1px solid var(--line);
+    }
+    .text-card .text-kicker { color: var(--accent); font-size: .67rem; letter-spacing: .23em; }
+    .text-card h4 { margin: 1.3rem 0 .7rem; font: 400 clamp(1.3rem, 2.8vw, 2.2rem)/1.35 var(--serif); }
+    .text-card p { margin: 0; color: var(--muted); font-size: .82rem; line-height: 1.9; }
+    .chapter-note {
+      display: grid;
+      grid-template-columns: 1fr 2fr;
+      gap: 1rem;
+      margin: 2rem 0 0;
+      padding: 1.3rem 0;
+      border-bottom: 1px solid var(--line);
+      color: var(--muted);
+      font-size: .78rem;
+      line-height: 1.9;
+    }
+    .chapter-note strong { color: var(--accent); font-weight: 400; letter-spacing: .16em; }
+
+    /* ==================== 灵活版面与前置竖版视频 ==================== */
+    .early-film {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(10rem, 15rem);
+      gap: clamp(1.5rem, 6vw, 5rem);
+      align-items: center;
+      padding: clamp(2.7rem, 6vw, 5.5rem) 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .early-film-copy h2 { margin: 0 0 .9rem; font: 400 clamp(2rem, 4.5vw, 4rem)/1.2 var(--serif); }
+    .early-film-copy p:not(.eyebrow) { max-width: 29rem; margin: 0; color: var(--muted); font-size: .9rem; line-height: 2; }
+    .early-film .video-card { width: min(100%, 15rem); justify-self: end; aspect-ratio: 9 / 16; min-height: 0; }
+    .early-film .video-card img { min-height: 0; aspect-ratio: 9 / 16; object-fit: cover; }
+    .video-section .video-cards.video-cards--single { grid-template-columns: 1fr; }
+    .video-card--landscape, .video-card--landscape img { min-height: clamp(15rem, 42vw, 29rem); }
+    .video-card--landscape img { aspect-ratio: 16 / 9; }
+
+    /* ==================== ④ 视频区：点击后黑色浮层播放 ==================== */
+    .video-section { padding: clamp(4rem, 8vw, 7rem) 0 0; }
+    .video-section-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: end; padding-bottom: 1.2rem; border-bottom: 1px solid var(--line); }
+    .video-section-heading h2 { margin: 0; font: 400 clamp(2rem, 4.5vw, 4rem)/1.2 var(--serif); }
+    .video-section-heading p { max-width: 18rem; margin: 0; color: var(--muted); font-size: .76rem; line-height: 1.8; }
+    .video-cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; margin-top: 1.4rem; }
+    .video-card {
+      position: relative;
+      min-height: 13rem;
+      overflow: hidden;
+      border: 0;
+      border-radius: .5rem;
+      padding: 0;
+      color: #fff;
+      text-align: left;
+      background: #251c16;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+    }
+    .video-card img { display: block; width: 100%; height: 100%; min-height: 13rem; object-fit: cover; transition: transform .8s ease; }
+    .video-card:hover img { transform: scale(1.035); }
+    .video-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 25%, rgba(24,14,9,.82)); pointer-events: none; }
+    .video-card-copy { position: absolute; z-index: 1; right: 1rem; bottom: 1rem; left: 1rem; }
+    .video-card-copy small { color: #ead8bd; font-size: .66rem; letter-spacing: .2em; }
+    .video-card-copy strong { display: block; margin-top: .45rem; font: 400 1.55rem/1.25 var(--serif); }
+    .play-mark { position: absolute; z-index: 2; top: 1rem; right: 1rem; width: 2.8rem; height: 2.8rem; display: grid; place-items: center; border: 1px solid rgba(255,255,255,.7); border-radius: 50%; background: rgba(0,0,0,.18); font-size: 1.1rem; }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      z-index: 100;
+      display: none;
+      place-items: center;
+      padding: 1rem;
+      background: rgba(7, 5, 4, .90);
+    }
+    .modal.is-open { display: grid; }
+    .modal-dialog { position: relative; width: min(100%, 58rem); }
+    .modal-video { display: block; width: 100%; max-height: 84svh; background: #000; }
+    .modal-close { position: absolute; z-index: 2; top: -.7rem; right: -.7rem; width: 2.5rem; height: 2.5rem; border: 1px solid rgba(255,255,255,.75); border-radius: 50%; color: #fff; background: #211914; cursor: pointer; font-size: 1.2rem; }
+    .modal-caption { margin: .8rem 0 0; color: #ddd0c2; font-size: .78rem; text-align: center; }
+
+    /* ==================== ⑤ 结尾邀请 ==================== */
+    .closing {
+      margin-top: clamp(4rem, 9vw, 8rem);
+      padding: clamp(4rem, 10vw, 8rem) 1.2rem;
+      text-align: center;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .closing h2 { margin: 0 0 1rem; font: 400 clamp(2.2rem, 6vw, 5rem)/1.25 var(--serif); }
+    .closing p { max-width: 35rem; margin: 0 auto; color: var(--muted); font-size: .93rem; line-height: 2; }
+    .closing .signature { margin-top: 2rem; color: var(--accent); font: 400 1.4rem var(--serif); letter-spacing: .14em; }
+    footer { padding: 2rem 1rem 3rem; color: var(--muted); font-size: .7rem; letter-spacing: .16em; text-align: center; }
+
+    /* ==================== 移动端：微信内置浏览器优先 ==================== */
+    @media (max-width: 760px) {
+      .info-spread, .story-intro { grid-template-columns: 1fr; gap: 2.2rem; }
+      .early-film { grid-template-columns: 1fr minmax(8.5rem, 11rem); gap: 1rem; }
+      .early-film .video-card { width: 100%; }
+      .info-spread { padding-top: 3.3rem; }
+      .chapter-heading { grid-template-columns: 3rem minmax(0, 1fr); }
+      .chapter-heading p { grid-column: 2; }
+      .video-section-heading { display: block; }
+      .video-section-heading p { margin-top: .8rem; }
+      .editorial-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+      .tile { grid-column: span 3; }
+      .tile--panorama { grid-column: 1 / -1; }
+      .text-card { grid-column: span 3; }
+      .text-card--wide { grid-column: 1 / -1; }
+    }
+    @media (max-width: 480px) {
+      .cover { min-height: 82svh; }
+      .cover-copy { padding-bottom: 2.4rem; }
+      .cover h1 { font-size: 2.65rem; }
+      .cover-subtitle { letter-spacing: .12em; }
+      .cover-meta span { font-size: .68rem; }
+      .chapter-heading { gap: .7rem; }
+      .chapter-number { font-size: 1.1rem; }
+      .editorial-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
+      .tile, .text-card { grid-column: span 1; }
+      .tile--wide, .tile--panorama, .text-card--wide { grid-column: 1 / -1; }
+      .tile--wide { aspect-ratio: 1.35 / 1; }
+      .tile--panorama { aspect-ratio: 1.6 / 1; }
+      .tile--portrait { aspect-ratio: .76 / 1; }
+      .text-card { min-height: 12rem; padding: 1rem; }
+      .early-film { display: block; }
+      .early-film .video-card { width: min(100%, 14rem); margin: 1.5rem auto 0; }
+      .video-cards { grid-template-columns: 1fr; }
+      .video-card, .video-card img { min-height: 14rem; }
+      .chapter-note { grid-template-columns: 1fr; gap: .35rem; }
+      .chapter-note strong { font-size: .7rem; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior: auto; }
+      *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+    }
+  </style>
 </head>
 <body>
-    <!-- 弹幕容器 -->
-    <div class="danmaku-container" id="danmakuContainer"></div>
-    
-    <!-- 固定导航 -->
-    <nav class="fixed-nav">
-        <div class="nav-content">
-            <a href="#home" class="nav-item">🏠 首页</a>
-            <a href="#countdown" class="nav-item">⏰ 倒计时</a>
-            <a href="#details" class="nav-item">📋 信息</a>
-            <a href="#timeline" class="nav-item">⏱️ 流程</a>
-            <a href="#gallery" class="nav-item">📸 照片</a>
-            <a href="#map" class="nav-item">🗺️ 地图</a>
-            <a href="#rsvp" class="nav-item">✍️ RSVP</a>
-            <a href="#wishes" class="nav-item">💬 祝福</a>
+  <main class="page">
+    <!-- ① 封面头图：替换 src 为新人主婚纱照的绝对 HTTPS 地址 -->
+    <header class="cover" id="top">
+      <img class="cover-photo" src="./assets/photos/photo-43.jpg" alt="新人在雪山花环前的主婚纱照">
+      <div class="cover-copy">
+        <p class="eyebrow">OUR DAY · 2026.10.01</p>
+        <h1>顾振刚 &amp; 赵国艳</h1>
+        <p class="cover-subtitle">我们在十月见面</p>
+        <div class="cover-meta" aria-label="婚礼摘要">
+          <span>2026 年 10 月 1 日</span>
+          <span>星期四 · 10:18</span>
+          <span>天水 · 百宴廷</span>
         </div>
-    </nav>
-    
-    <!-- 主视觉 -->
-    <section class="hero" id="home">
-        <img src="photos/weixin_8df0c765_image.jpg" alt="新人照片" class="hero-img">
-        <h1>We're Getting Married!</h1>
-        <p>💕 我们要结婚啦！💕</p>
-        <p>诚挚邀请您参加我们的婚礼</p>
-        <div class="hero-date">📅 2026 年 10 月 1 日</div>
-    </section>
-    
-    <!-- 倒计时 -->
-    <div class="countdown-section section visible" id="countdown">
-        <div class="section-title">⏰ 距离婚礼还有</div>
-        <div class="countdown">
-            <div class="countdown-item">
-                <span class="countdown-number" id="days">00</span>
-                <span class="countdown-label">天</span>
-            </div>
-            <div class="countdown-item">
-                <span class="countdown-number" id="hours">00</span>
-                <span class="countdown-label">时</span>
-            </div>
-            <div class="countdown-item">
-                <span class="countdown-number" id="minutes">00</span>
-                <span class="countdown-label">分</span>
-            </div>
-            <div class="countdown-item">
-                <span class="countdown-number" id="seconds">00</span>
-                <span class="countdown-label">秒</span>
-            </div>
+      </div>
+    </header>
+
+    <div class="section-wrap">
+      <!-- ② 婚礼核心信息 -->
+      <section class="info-spread" aria-labelledby="info-title">
+        <div class="info-copy">
+          <p class="eyebrow">OUR DAY</p>
+          <h2 id="info-title" class="serif">这一天，想和你分享</h2>
+          <p>一路走来，我们拍下了很多照片。它们没有严格的顺序，只是刚好记住了那些一起看过的风景。十月一日，欢迎来天水，和我们见面。</p>
+          <!-- 简约新中式手绘线稿甜点插画 -->
+          <svg class="dessert-doodle" viewBox="0 0 220 130" role="img" aria-label="手绘甜点插画" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M51 53h118l-7 53H58l-7-53Z"/>
+            <path d="M43 53c6-12 22-16 34-9 10-18 39-19 51 0 13-12 38-5 45 9"/>
+            <path d="M68 72h84M65 88h90"/>
+            <path d="M109 31c-4-11 7-14 2-24M121 32c0-9 9-13 4-22"/>
+            <path d="M30 107h162M83 116h58"/>
+            <circle cx="80" cy="65" r="3"/><circle cx="139" cy="64" r="3"/>
+          </svg>
         </div>
+        <div class="info-details">
+          <div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">公历 2026 年 10 月 1 日<br>星期四 · 农历丙午年八月廿一</span></div>
+          <div class="detail-row"><span class="detail-label">TIME</span><span class="detail-value">上午 10:18 · 吉时</span></div>
+          <div class="detail-row"><span class="detail-label">PLACE</span><span class="detail-value">甘肃省天水市<br>百宴廷宴会中心</span></div>
+          <!-- 将 MAP_LINK 替换为你最终确认的高德 / 腾讯地图导航地址 -->
+          <a class="map-button" href="https://uri.amap.com/search?keyword=%E5%A4%A9%E6%B0%B4%E7%99%BE%E5%AE%B4%E4%BA%AD%E5%AE%B4%E4%BC%9A%E4%B8%AD%E5%BF%83" target="_blank" rel="noopener">打开地图导航</a>
+        </div>
+      </section>
+
+      <!-- 竖版视频提前出现：点击封面后在黑色浮层中播放 -->
+      <section class="early-film" id="early-film" aria-labelledby="early-film-title">
+        <div class="early-film-copy">
+          <p class="eyebrow">A SHORT NOTE FROM THAT DAY</p>
+          <h2 id="early-film-title" class="serif">先看这一段</h2>
+          <p>一段竖屏花絮，像从那一天寄来的一张小小明信片。点击封面，慢慢看。</p>
+        </div>
+        <button class="video-card video-card--portrait" type="button" data-video="./assets/videos/video-02.mp4" data-title="竖屏花絮 · 从那一天寄来的一张明信片" data-poster="./assets/photos/photo-49.jpg">
+          <img src="./assets/photos/photo-49.jpg" alt="竖屏花絮封面" loading="lazy">
+          <span class="play-mark" aria-hidden="true">▶</span>
+          <span class="video-card-copy"><small>FILM 02 · A NOTE</small><strong>一段花絮</strong></span>
+        </button>
+      </section>
+
+      <!-- 倒计时与故事总导语 -->
+      <section class="story-intro" aria-labelledby="story-title">
+        <div>
+          <p class="eyebrow">OUR STORY</p>
+          <h2 id="story-title" class="serif">把一路的风景，留给你</h2>
+          <p>照片没有严格的顺序，都是我们想留住的片段。十月一日，希望你也在。</p>
+        </div>
+        <div class="countdown" aria-label="婚礼倒计时">
+          <p class="countdown-title">COUNTING DOWN TO THE DAY</p>
+          <div class="countdown-grid">
+            <div class="count-item"><strong data-unit="days">--</strong><span>天</span></div>
+            <div class="count-item"><strong data-unit="hours">--</strong><span>时</span></div>
+            <div class="count-item"><strong data-unit="minutes">--</strong><span>分</span></div>
+            <div class="count-item"><strong data-unit="seconds">--</strong><span>秒</span></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ③ 照片故事：精选照片以不等大小版面展开 -->
+      <section id="story" aria-label="爱情故事时间线">
+        <div id="story-chapters"></div>
+      </section>
+
+      <!-- 横版视频放在页面最底部，作为故事的收尾 -->
+      <section class="video-section video-section--footer" id="films" aria-labelledby="films-title">
+        <div class="video-section-heading">
+          <h2 id="films-title" class="serif">最后，再看一遍风景</h2>
+          <p>把这段外景短片留到最后。点击封面播放，愿你看到时也正好有空。</p>
+        </div>
+        <div class="video-cards video-cards--single">
+          <button class="video-card video-card--landscape" type="button" data-video="./assets/videos/video-01.mp4" data-title="外景短片 · 把风景留在身后" data-poster="./assets/photos/photo-02.jpg">
+            <img src="./assets/photos/photo-02.jpg" alt="外景短片封面" loading="lazy">
+            <span class="play-mark" aria-hidden="true">▶</span>
+            <span class="video-card-copy"><small>FILM 01 · OUTDOOR</small><strong>把风景留在身后</strong></span>
+          </button>
+        </div>
+      </section>
+
+      <section class="closing" aria-label="邀请结语">
+        <p class="eyebrow">SEE YOU IN TIANSHUI</p>
+        <h2 class="serif">十月一日，天水见</h2>
+        <p>如果你愿意，请来和我们一起吃顿饭，看看这一天，也祝福我们。</p>
+        <p class="signature serif">顾振刚 · 赵国艳</p>
+      </section>
     </div>
-    
-    <!-- 婚礼信息 -->
-    <div class="info-section section" id="details">
-        <div class="section-title">📋 婚礼信息</div>
-        
-        <div class="info-item">
-            <span class="info-icon">📅</span>
-            <span class="info-label">日期</span>
-            <span class="info-value">2026 年 10 月 1 日（星期四）</span>
-        </div>
-        
-        <div class="info-item">
-            <span class="info-icon">🕐</span>
-            <span class="info-label">时间</span>
-            <span class="info-value">上午 10:18（吉时）</span>
-        </div>
-        
-        <div class="info-item">
-            <span class="info-icon">📍</span>
-            <span class="info-label">地点</span>
-            <span class="info-value">甘肃省天水市 百宴廷</span>
-        </div>
-        
-        <div class="info-item">
-            <span class="info-icon">💒</span>
-            <span class="info-label">宴席</span>
-            <span class="info-value">婚礼仪式 + 婚宴</span>
-        </div>
+    <footer>2026.10.01 · 天水百宴廷宴会中心</footer>
+  </main>
+
+  <!-- 视频黑色浮层：关闭时 pause() + currentTime=0 -->
+  <div class="modal" id="video-modal" role="dialog" aria-modal="true" aria-label="视频播放窗口" aria-hidden="true">
+    <div class="modal-dialog">
+      <button class="modal-close" id="modal-close" type="button" aria-label="关闭视频">×</button>
+      <video class="modal-video" id="modal-video" controls playsinline webkit-playsinline preload="none"></video>
+      <p class="modal-caption" id="modal-caption"></p>
     </div>
-    
-    <!-- 婚礼流程 -->
-    <div class="section" id="timeline">
-        <div class="section-title">⏰ 婚礼流程</div>
-        <div class="timeline">
-            <div class="timeline-item">
-                <div class="timeline-dot">🎉</div>
-                <div class="timeline-time">09:30</div>
-                <div class="timeline-event">宾客签到</div>
-                <div class="timeline-location">宴会厅入口</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot">💒</div>
-                <div class="timeline-time">10:18</div>
-                <div class="timeline-event">婚礼仪式</div>
-                <div class="timeline-location">主舞台</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot">🥂</div>
-                <div class="timeline-time">12:00</div>
-                <div class="timeline-event">婚宴开始</div>
-                <div class="timeline-location">宴会厅</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot">🍷</div>
-                <div class="timeline-time">13:00</div>
-                <div class="timeline-event">敬酒环节</div>
-                <div class="timeline-location">宴会厅</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot">🎊</div>
-                <div class="timeline-time">14:00</div>
-                <div class="timeline-event">婚礼结束</div>
-                <div class="timeline-location">宴会厅门口</div>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 照片长廊 -->
-    <div class="section" id="gallery">
-        <div class="section-title">📸 我们的故事</div>
-        <div class="gallery" id="galleryGrid">
-            <!-- 照片由 JS 动态加载 -->
-        </div>
-    </div>
-    
-    <!-- 地图 -->
-    <div class="map-section section" id="map">
-        <div class="section-title">🗺️ 婚礼地点</div>
-        <iframe class="map-frame" src="https://www.openstreetmap.org/export/embed.html?bbox=105.7,34.5,105.8,34.6&amp;layer=mapnik&amp;marker=34.55,105.75"></iframe>
-        <p style="text-align: center; margin-top: 15px; color: #666;">📍 甘肃省天水市 百宴廷</p>
-    </div>
-    
-    <!-- RSVP -->
-    <div class="rsvp-section section" id="rsvp">
-        <div class="section-title">✍️ 出席回复</div>
-        <p style="text-align: center; margin-bottom: 20px; color: #666;">请您于 2026 年 9 月 20 日前回复，以便我们安排座位</p>
-        
-        <form class="rsvp-form" onsubmit="submitRSVP(event)">
-            <div class="form-group">
-                <label class="form-label">姓名 *</label>
-                <input type="text" class="form-input" id="rsvpName" required placeholder="请输入您的姓名">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">手机号 *</label>
-                <input type="tel" class="form-input" id="rsvpPhone" required placeholder="请输入您的手机号">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">出席状态 *</label>
-                <select class="form-select" id="rsvpStatus" required>
-                    <option value="">请选择</option>
-                    <option value="参加">✅ 参加</option>
-                    <option value="不参加">❌ 不参加</option>
-                    <option value="待定">⏳ 待定</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">同行人数</label>
-                <input type="number" class="form-input" id="rsvpGuests" min="1" max="10" value="1" placeholder="包括您在内的人数">
-            </div>
-            
-            <div class="form-group">
-                <label class="form-label">祝福语或备注</label>
-                <textarea class="form-textarea" id="rsvpMessage" placeholder="想对我们说的话..."></textarea>
-            </div>
-            
-            <button type="submit" class="rsvp-btn" id="rsvpBtn">提交回复 💕</button>
-        </form>
-        
-        <div style="margin-top: 30px;">
-            <div class="section-title" style="font-size: 20px;">📅 添加到日历</div>
-            <div class="calendar-btns">
-                <a href="https://calendar.google.com/calendar/render?action=TEMPLATE&text=婚礼邀请&dates=20261001T101800/20261001T140000&details=婚礼地点：甘肃省天水市百宴廷&location=甘肃省天水市百宴廷" target="_blank" class="calendar-btn calendar-google">Google 日历</a>
-                <a href="data:text/calendar;charset=utf8,BEGIN:VCALENDAR%0AVERSION:2.0%0ABEGIN:VEVENT%0ASUMMARY:婚礼邀请%0ADTSTART:20261001T101800%0ADTEND:20261001T140000%0ALOCATION:甘肃省天水市百宴廷%0ADESCRIPTION:婚礼地点：甘肃省天水市百宴廷%0AEND:VEVENT%0AEND:VCALENDAR" class="calendar-btn calendar-apple">Apple 日历</a>
-                <a href="https://outlook.live.com/calendar/0/deeplink/compose?path=/calendar/action/compose&rru=addevent&startdt=2026-10-01T10:18:00&enddt=2026-10-01T14:00:00&subject=婚礼邀请&body=婚礼地点：甘肃省天水市百宴廷&location=甘肃省天水市百宴廷" target="_blank" class="calendar-btn calendar-outlook">Outlook</a>
-            </div>
-        </div>
-    </div>
-    
-    <!-- 交通预订 -->
-    <div class="travel-section section">
-        <div class="section-title">✈️ 交通预订</div>
-        <p style="text-align: center; color: #666;">需要预订机票或火车票？点击下方按钮</p>
-        <div id="userLocation"></div>
-        <div class="travel-btns">
-            <button class="travel-btn travel-flight" onclick="openTravelLink('flight')">✈️ 预订机票</button>
-            <button class="travel-btn travel-train" onclick="openTravelLink('train')">🚄 预订火车票</button>
-        </div>
-    </div>
-    
-    <!-- 祝福墙 -->
-    <div class="wishes-section section" id="wishes">
-        <div class="section-title">💬 送上祝福</div>
-        
-        <div class="wish-form">
-            <input type="text" class="form-input" id="wishName" placeholder="您的称呼（可选）">
-            <textarea class="form-textarea" id="wishText" placeholder="写下您的祝福..." style="min-height: 80px;"></textarea>
-            <button class="wish-btn" onclick="addWish()">发送祝福 💕</button>
-        </div>
-        
-        <div class="wishes-list" id="wishesList" style="display: none;">
-            <div id="wishesLoading" style="text-align: center; padding: 20px; color: #666;">加载中...</div>
-        </div>
-    </div>
-    
-    <!-- 页脚 -->
-    <footer class="footer">
-        <p>💕 期待您的光临 💕</p>
-        <p style="margin-top: 10px; font-size: 12px;">如有任何问题，请随时联系我们</p>
-    </footer>
-    
-    <!-- 灯箱 -->
-    <div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
-        <span class="lightbox-close" onclick="closeLightbox()">&times;</span>
-        <span class="lightbox-nav lightbox-prev" onclick="prevPhoto()">&#10094;</span>
-        <img class="lightbox-img" id="lightbox-img" src="" alt="放大照片">
-        <span class="lightbox-nav lightbox-next" onclick="nextPhoto()">&#10095;</span>
-        <div class="lightbox-counter" id="lightbox-counter">1 / 11</div>
-    </div>
-    
-    <!-- 音乐控制 -->
-    <div class="music-control" id="musicControl" onclick="toggleMusic()">
-        <span class="music-icon">🎵</span>
-    </div>
-    
-    <audio id="bgMusic" loop>
-        <source src="https://www.bensound.com/bensound-music/bensound-love.mp3" type="audio/mpeg">
-    </audio>
-    
-    <script>
-        // ========== CloudBase 配置 ==============
-        const CLOUDBASE_CONFIG = {
-            env: 'cloud-env-5g1kb7epc87ee1d6',
-            anonymousAuth: true
-        };
-        
-        // 初始化 CloudBase
-        let cloudbase = null;
-        let db = null;
-        
-        function initCloudBase() {
-            try {
-                cloudbase = window.cloudbase.init({
-                    env: CLOUDBASE_CONFIG.env,
-                    anonymousAuth: CLOUDBASE_CONFIG.anonymousAuth
-                });
-                db = cloudbase.database();
-                console.log('✅ CloudBase 初始化成功');
-                return true;
-            } catch (err) {
-                console.error('❌ CloudBase 初始化失败:', err);
-                return false;
-            }
-        }
-        
-        // 全局变量
-        let userCity = '未知';
-        let currentPhotoIndex = 0;
-        let isMusicPlaying = false;
-        
-        // 照片列表
-        const photos = [
-            'photos/weixin_8df0c765_image.jpg',
-            'photos/photo_1.jpg',
-            'photos/photo_2.jpg',
-            'photos/photo_3.jpg',
-            'photos/photo_4.jpg',
-            'photos/photo_5.jpg',
-            'photos/photo_6.jpg',
-            'photos/photo_7.jpg',
-            'photos/photo_8.jpg',
-            'photos/photo_9.jpg',
-            'photos/photo_10.jpg'
-        ];
-        
-        // 初始化
-        window.addEventListener('load', () => {
-            // 初始化 CloudBase
-            const cbInit = initCloudBase();
-            
-            // 加载照片
-            loadGallery();
-            
-            // 获取用户位置
-            getUserLocation();
-            
-            // 加载祝福
-            loadWishes();
-            
-            // 自动播放音乐
-            playMusic();
+  </div>
+
+  <script>
+    /*
+      ==================== 资源替换说明 ====================
+      1. 封面：替换 .cover-photo 的 src。
+      2. 故事照片：PHOTO_URLS 仅保留适合本版构图的精选照片。
+      3. 视频：当前已替换为 assets/videos/video-01.mp4 和 video-02.mp4；如更换素材，替换 data-video / data-poster。
+      4. OG：替换 head 内 og:url、og:image、canonical 等地址。
+      5. 地图：替换 .map-button 的 href。
+    */
+
+    // 49 张真实婚纱照，已按海边旅拍→林间白纱→山野花环婚礼的内容顺序编排。
+    // 49 张真实婚纱照，按原始批次顺序进入故事时间线。
+    const PHOTO_URLS = [
+      './assets/photos/photo-01.jpg',
+      './assets/photos/photo-02.jpg',
+      './assets/photos/photo-06.jpg',
+      './assets/photos/photo-08.jpg',
+      './assets/photos/photo-10.jpg',
+      './assets/photos/photo-11.jpg',
+      './assets/photos/photo-13.jpg',
+      './assets/photos/photo-16.jpg',
+      './assets/photos/photo-19.jpg',
+      './assets/photos/photo-20.jpg',
+      './assets/photos/photo-21.jpg',
+      './assets/photos/photo-23.jpg',
+      './assets/photos/photo-24.jpg',
+      './assets/photos/photo-25.jpg',
+      './assets/photos/photo-27.jpg',
+      './assets/photos/photo-28.jpg',
+      './assets/photos/photo-30.jpg',
+      './assets/photos/photo-33.jpg',
+      './assets/photos/photo-34.jpg',
+      './assets/photos/photo-36.jpg',
+      './assets/photos/photo-38.jpg',
+      './assets/photos/photo-41.jpg',
+      './assets/photos/photo-42.jpg',
+      './assets/photos/photo-43.jpg',
+      './assets/photos/photo-44.jpg',
+      './assets/photos/photo-46.jpg',
+      './assets/photos/photo-47.jpg',
+      './assets/photos/photo-49.jpg',
+    ];
+
+    const CHAPTERS = [
+      {
+        number: '01', title: '从一场晚风开始', subtitle: 'A QUIET BEGINNING',
+        lead: '最初没有宏大的开场，只是夕阳、湖面，以及身边多了一个人。',
+        photos: [
+          { i: 0, type: 'half', span: 5, caption: '晚风把我们带到同一片光里' },
+          { i: 1, type: 'half', span: 7, caption: '那天，我们并肩看了很久' },
+          { i: 2, type: 'panorama', span: 12, caption: '从这里开始，身边一直有你' }
+        ]
+      },
+      {
+        number: '02', title: '去远一点的地方', subtitle: 'ON THE SAME ROAD',
+        lead: '我们开过车，吹过风，也在一些没有安排的下午里，慢慢把彼此放进生活。',
+        photos: [
+          { i: 3, type: 'wide', span: 8, caption: '把车停在风景旁边' },
+          { i: 4, type: 'third', span: 4, caption: '沿着海岸线慢慢走' },
+          { i: 5, type: 'half', span: 6, caption: '你在车里，我在镜头外' },
+          { i: 6, type: 'half', span: 6, caption: '公路很长，刚好够我们说很多话' },
+          { i: 7, type: 'portrait', span: 4, caption: '把远方收进一张照片' },
+          { i: 8, type: 'wide', span: 8, caption: '回头就能看见你' },
+          { i: 9, type: 'third', span: 4, caption: '旅程从来不只关于目的地' }
+        ]
+      },
+      {
+        number: '03', title: '走进树影和花', subtitle: 'INTO THE WOODS',
+        lead: '从海边到林间，从日常到婚礼，喜欢渐渐有了更具体的样子。',
+        photos: [
+          { i: 10, type: 'wide', span: 8, caption: '光从树叶之间落下来' },
+          { i: 11, type: 'portrait', span: 4, caption: '白纱经过一小片树影' },
+          { i: 12, type: 'portrait', span: 4, caption: '靠近一点，再靠近一点' },
+          { i: 13, type: 'wide', span: 8, caption: '走在同一条林间小路上' },
+          { i: 14, type: 'panorama', span: 12, caption: '花环在山谷里开成一扇门' }
+        ]
+      },
+      {
+        number: '04', title: '这一页，写下我们', subtitle: 'THE DAY WE CHOOSE',
+        lead: '花环、山谷和白色礼服都在场。更重要的是，我们也在场，准备把以后认真过下去。',
+        photos: [
+          { i: 15, type: 'half', span: 7, caption: '把仪式放进山野' },
+          { i: 16, type: 'third', span: 5, caption: '在花与山之间相视而笑' },
+          { i: 17, type: 'portrait', span: 4, caption: '白纱与花枝一起落在肩头' },
+          { i: 18, type: 'wide', span: 8, caption: '交换的不只是戒指，还有以后' },
+          { i: 19, type: 'panorama', span: 12, caption: '两个人，写下同一个答案' },
+          { i: 20, type: 'wide', span: 8, caption: '这一刻，我们都在笑' },
+          { i: 21, type: 'portrait', span: 4, caption: '把拥抱留在这页' },
+          { i: 22, type: 'half', span: 6, caption: '风景很远，我们靠得很近' },
+          { i: 23, type: 'half', span: 6, caption: '故事还会继续' },
+          { i: 24, type: 'wide', span: 8, caption: '下一页，继续一起写' },
+          { i: 25, type: 'portrait', span: 4, caption: '顾振刚 · 赵国艳' },
+          { i: 26, type: 'half', span: 6, caption: '十月一日，天水见' },
+          { i: 27, type: 'half', span: 6, caption: '谢谢你来' }
+        ]
+      }
+    ];
+
+    const storyRoot = document.getElementById('story-chapters');
+
+    function createPhotoTile(item, chapterIndex) {
+      if (item.type === 'text') {
+        const card = document.createElement('aside');
+        card.className = `text-card ${item.span === 12 ? 'text-card--wide' : ''}`;
+        card.style.setProperty('--span', item.span || 4);
+        card.innerHTML = `<span class="text-kicker">${item.kicker}</span><h4>${item.title}</h4><p>${item.body}</p>`;
+        return card;
+      }
+      const figure = document.createElement('figure');
+      figure.className = `tile tile--${item.type}`;
+      figure.style.setProperty('--span', item.span || 6);
+      figure.dataset.chapter = chapterIndex + 1;
+      const img = document.createElement('img');
+      img.src = PHOTO_URLS[item.i];
+      img.alt = item.caption || `婚礼照片 ${item.i + 1}`;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      const caption = document.createElement('figcaption');
+      caption.textContent = item.caption || '我们的照片';
+      figure.append(img, caption);
+      return figure;
+    }
+
+    CHAPTERS.forEach((chapter, chapterIndex) => {
+      const section = document.createElement('article');
+      section.className = 'chapter';
+      section.innerHTML = `
+        <header class="chapter-heading">
+          <span class="chapter-number">${chapter.number}</span>
+          <h3>${chapter.title}</h3>
+          <p>${chapter.subtitle}<br>OUR STORY · CHAPTER ${chapter.number}</p>
+        </header>
+        <p class="chapter-lead">${chapter.lead}</p>
+        <div class="editorial-grid"></div>
+      `;
+      const grid = section.querySelector('.editorial-grid');
+      chapter.photos.forEach(item => grid.appendChild(createPhotoTile(item, chapterIndex)));
+      storyRoot.appendChild(section);
+    });
+
+    // 图片淡入：IntersectionObserver 不可用时自动降级为全部显示。
+    const revealImages = () => {
+      const tiles = document.querySelectorAll('.tile');
+      if (!('IntersectionObserver' in window)) {
+        tiles.forEach(tile => tile.classList.add('is-visible'));
+        return;
+      }
+      const observer = new IntersectionObserver((entries, obs) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+            obs.unobserve(entry.target);
+          }
         });
-        
-        // 加载照片长廊
-        function loadGallery() {
-            const gallery = document.getElementById('galleryGrid');
-            gallery.innerHTML = '';
-            
-            photos.forEach((photo, index) => {
-                const item = document.createElement('div');
-                item.className = 'photo-item';
-                item.onclick = () => openLightbox(index);
-                item.innerHTML = `<img src="${photo}" alt="照片${index + 1}">`;
-                gallery.appendChild(item);
-            });
-        }
-        
-        // 音乐控制
-        function playMusic() {
-            const music = document.getElementById('bgMusic');
-            music.play().then(() => {
-                isMusicPlaying = true;
-                document.getElementById('musicControl').classList.remove('paused');
-            }).catch(() => {
-                isMusicPlaying = false;
-                document.getElementById('musicControl').classList.add('paused');
-            });
-        }
-        
-        function toggleMusic() {
-            const music = document.getElementById('bgMusic');
-            if (isMusicPlaying) {
-                music.pause();
-                document.getElementById('musicControl').classList.add('paused');
-            } else {
-                music.play();
-                document.getElementById('musicControl').classList.remove('paused');
-            }
-            isMusicPlaying = !isMusicPlaying;
-        }
-        
-        // 获取用户位置
-        function getUserLocation() {
-            const locationDiv = document.getElementById('userLocation');
-            
-            if (!navigator.geolocation) {
-                locationDiv.innerHTML = '<p>📍 您的浏览器不支持地理位置功能</p>';
-                return;
-            }
-            
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const lat = position.coords.latitude;
-                    const lng = position.coords.longitude;
-                    
-                    // 使用反向地理编码获取城市名（使用免费 API）
-                    fetch(`https://restapi.amap.com/v3/geocode/regeo?location=${lng},${lat}&key=YOUR_AMAP_KEY`)
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.status === '1' && data.regeocode) {
-                                const city = data.regeocode.addressComponent.city || data.regeocode.addressComponent.province;
-                                userCity = city.replace('市', '');
-                                locationDiv.innerHTML = `<p>📍 检测到您的位置：<strong>${userCity}</strong></p>`;
-                            } else {
-                                locationDiv.innerHTML = '<p>📍 无法获取详细位置信息</p>';
-                            }
-                        })
-                        .catch(() => {
-                            locationDiv.innerHTML = '<p>📍 无法获取详细位置信息</p>';
-                        });
-                },
-                (error) => {
-                    console.log('位置获取失败:', error);
-                    locationDiv.innerHTML = '<p>📍 请点击浏览器地址栏右侧允许获取位置</p>';
-                },
-                {
-                    enableHighAccuracy: false,
-                    timeout: 5000,
-                    maximumAge: 300000
-                }
-            );
-        }
-        
-        // 打开交通预订链接
-        function openTravelLink(type) {
-            const date = '2026-10-01';
-            let url;
-            
-            if (type === 'flight') {
-                url = `https://flights.ctrip.com/online/list/domestic-one-way?allianceid=0&sid=0&cityname=${encodeURIComponent(userCity)}&citycode=&cityname2=天水&citycode2=TSG&deptime=${date}`;
-            } else if (type === 'train') {
-                url = `https://www.12306.cn/mormhweb/`;
-            }
-            
-            window.open(url, '_blank');
-        }
-        
-        // 花瓣雨效果
-        function createPetal() {
-            const petal = document.createElement('div');
-            petal.className = 'petal';
-            petal.textContent = ['🌸', '', '🌹', '💕', '💖'][Math.floor(Math.random() * 5)];
-            petal.style.left = Math.random() * 100 + 'vw';
-            petal.style.animationDuration = (Math.random() * 5 + 5) + 's';
-            petal.style.opacity = Math.random() * 0.5 + 0.5;
-            petal.style.fontSize = (Math.random() * 15 + 15) + 'px';
-            document.body.appendChild(petal);
-            
-            setTimeout(() => {
-                petal.remove();
-            }, 10000);
-        }
-        
-        // 每 800ms 创建一个花瓣
-        setInterval(createPetal, 800);
-        
-        // 页面加载时的欢迎动画
-        window.addEventListener('load', () => {
-            for (let i = 0; i < 20; i++) {
-                setTimeout(createPetal, i * 150);
-            }
-        });
-        
-        // 倒计时功能
-        function updateCountdown() {
-            const weddingDate = new Date('2026-10-01T10:18:00');
-            const now = new Date();
-            const diff = weddingDate - now;
-            
-            if (diff > 0) {
-                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-                
-                document.getElementById('days').textContent = String(days).padStart(2, '0');
-                document.getElementById('hours').textContent = String(hours).padStart(2, '0');
-                document.getElementById('minutes').textContent = String(minutes).padStart(2, '0');
-                document.getElementById('seconds').textContent = String(seconds).padStart(2, '0');
-            } else {
-                document.getElementById('days').textContent = '00';
-                document.getElementById('hours').textContent = '00';
-                document.getElementById('minutes').textContent = '00';
-                document.getElementById('seconds').textContent = '00';
-            }
-        }
-        
-        setInterval(updateCountdown, 1000);
-        updateCountdown();
-        
-        // 滚动动画
-        function checkScroll() {
-            const sections = document.querySelectorAll('.section');
-            sections.forEach(section => {
-                const rect = section.getBoundingClientRect();
-                const isVisible = (rect.top < window.innerHeight * 0.85);
-                if (isVisible) {
-                    section.classList.add('visible');
-                }
-            });
-        }
-        
-        window.addEventListener('scroll', checkScroll);
-        checkScroll();
-        
-        // 照片灯箱功能
-        function openLightbox(index) {
-            const lightbox = document.getElementById('lightbox');
-            const lightboxImg = document.getElementById('lightbox-img');
-            const counter = document.getElementById('lightbox-counter');
-            
-            currentPhotoIndex = index;
-            lightboxImg.src = photos[currentPhotoIndex];
-            counter.textContent = `${currentPhotoIndex + 1} / ${photos.length}`;
-            lightbox.classList.add('active');
-            document.body.style.overflow = 'hidden';
-        }
-        
-        function closeLightbox(event) {
-            if (event && event.target !== event.currentTarget && !event.target.classList.contains('lightbox-nav')) return;
-            
-            const lightbox = document.getElementById('lightbox');
-            lightbox.classList.remove('active');
-            document.body.style.overflow = '';
-        }
-        
-        function prevPhoto() {
-            currentPhotoIndex = (currentPhotoIndex - 1 + photos.length) % photos.length;
-            updateLightbox();
-        }
-        
-        function nextPhoto() {
-            currentPhotoIndex = (currentPhotoIndex + 1) % photos.length;
-            updateLightbox();
-        }
-        
-        function updateLightbox() {
-            const lightboxImg = document.getElementById('lightbox-img');
-            const counter = document.getElementById('lightbox-counter');
-            
-            lightboxImg.src = photos[currentPhotoIndex];
-            counter.textContent = `${currentPhotoIndex + 1} / ${photos.length}`;
-        }
-        
-        // 键盘控制灯箱
-        document.addEventListener('keydown', (e) => {
-            const lightbox = document.getElementById('lightbox');
-            if (!lightbox.classList.contains('active')) return;
-            
-            if (e.key === 'Escape') closeLightbox();
-            if (e.key === 'ArrowLeft') prevPhoto();
-            if (e.key === 'ArrowRight') nextPhoto();
-        });
-        
-        // ========== 弹幕功能 ==========
-        function sendDanmaku(text, name) {
-            const container = document.getElementById('danmakuContainer');
-            const danmaku = document.createElement('div');
-            danmaku.className = 'danmaku-item';
-            danmaku.textContent = `${name ? name + ':' : ''}${text}`;
-            danmaku.style.top = Math.random() * 30 + 'px';
-            danmaku.style.animationDuration = (Math.random() * 5 + 8) + 's';
-            container.appendChild(danmaku);
-            
-            setTimeout(() => {
-                danmaku.remove();
-            }, 13000);
-        }
-        
-        // ========== CloudBase 数据库操作 ==========
-        
-        // 提交 RSVP
-        async function submitRSVPToCloudBase(data) {
-            if (!db) {
-                throw new Error('CloudBase 未初始化');
-            }
-            
-            try {
-                const collection = db.collection('rsvp');
-                const result = await collection.add({
-                    ...data,
-                    createTime: Date.now()
-                });
-                return { success: true, data: result };
-            } catch (err) {
-                console.error('RSVP 提交失败:', err);
-                throw err;
-            }
-        }
-        
-        // 提交祝福
-        async function submitWishToCloudBase(name, text) {
-            if (!db) {
-                throw new Error('CloudBase 未初始化');
-            }
-            
-            try {
-                const collection = db.collection('wishes');
-                const result = await collection.add({
-                    name: name || '匿名',
-                    text,
-                    createTime: Date.now()
-                });
-                return { success: true, data: result };
-            } catch (err) {
-                console.error('祝福提交失败:', err);
-                throw err;
-            }
-        }
-        
-        // 加载祝福列表
-        async function loadWishesFromCloudBase() {
-            if (!db) {
-                return [];
-            }
-            
-            try {
-                const collection = db.collection('wishes');
-                const result = await collection
-                    .orderBy('createTime', 'desc')
-                    .limit(100)
-                    .get();
-                return result.data || [];
-            } catch (err) {
-                console.error('加载祝福失败:', err);
-                return [];
-            }
-        }
-        
-        // ========== 祝福功能 ==========
-        async function loadWishes() {
-            const wishesList = document.getElementById('wishesList');
-            const loading = document.getElementById('wishesLoading');
-            
-            wishesList.innerHTML = '';
-            wishesList.style.display = 'block';
-            loading.style.display = 'block';
-            
-            // 从 CloudBase 加载祝福
-            const wishes = await loadWishesFromCloudBase();
-            
-            if (wishes.length === 0) {
-                // 添加默认祝福
-                const defaultWishes = [
-                    { name: '小明', text: '祝新人百年好合，永结同心！' },
-                    { name: '小红', text: '新婚快乐，早生贵子！' },
-                    { name: 'Anonymous', text: '白头偕老，幸福美满！' }
-                ];
-                defaultWishes.forEach(wish => {
-                    const item = document.createElement('div');
-                    item.className = 'wish-item';
-                    item.textContent = `💕 ${wish.name}：${wish.text}`;
-                    wishesList.appendChild(item);
-                    
-                    // 发送弹幕
-                    setTimeout(() => {
-                        sendDanmaku(wish.text, wish.name);
-                    }, Math.random() * 5000);
-                });
-            } else {
-                wishes.forEach(wish => {
-                    const item = document.createElement('div');
-                    item.className = 'wish-item';
-                    item.textContent = `💕 ${wish.name || '匿名'}：${wish.text}`;
-                    wishesList.appendChild(item);
-                    
-                    // 发送弹幕
-                    setTimeout(() => {
-                        sendDanmaku(wish.text, wish.name);
-                    }, Math.random() * 3000);
-                });
-            }
-            
-            loading.style.display = 'none';
-        }
-        
-        async function addWish() {
-            const name = document.getElementById('wishName').value.trim();
-            const text = document.getElementById('wishText').value.trim();
-            
-            if (!text) {
-                alert('请输入祝福语！💕');
-                return;
-            }
-            
-            try {
-                // 提交到 CloudBase
-                const result = await submitWishToCloudBase(name, text);
-                
-                if (result.success) {
-                    // 添加到显示列表
-                    const wishesList = document.getElementById('wishesList');
-                    const wishItem = document.createElement('div');
-                    wishItem.className = 'wish-item';
-                    wishItem.textContent = `💕 ${name || '匿名'}：${text}`;
-                    wishesList.insertBefore(wishItem, wishesList.firstChild);
-                    
-                    // 清空输入
-                    document.getElementById('wishName').value = '';
-                    document.getElementById('wishText').value = '';
-                    
-                    // 发送弹幕
-                    sendDanmaku(text, name);
-                    
-                    // 烟花效果
-                    createFirework();
-                    
-                    alert('✅ 祝福已发送！💕');
-                }
-            } catch (err) {
-                console.error('发送失败:', err);
-                alert('❌ 发送失败，请检查网络连接');
-            }
-        }
-        
-        // ========== RSVP 功能 ==========
-        async function submitRSVP(e) {
-            e.preventDefault();
-            
-            const btn = document.getElementById('rsvpBtn');
-            btn.disabled = true;
-            btn.textContent = '提交中...';
-            
-            const name = document.getElementById('rsvpName').value.trim();
-            const phone = document.getElementById('rsvpPhone').value.trim();
-            const status = document.getElementById('rsvpStatus').value;
-            const guests = document.getElementById('rsvpGuests').value || '1';
-            const message = document.getElementById('rsvpMessage').value.trim();
-            
-            try {
-                // 提交到 CloudBase
-                const result = await submitRSVPToCloudBase({
-                    name,
-                    phone,
-                    status,
-                    guests: parseInt(guests),
-                    message,
-                    location: userCity
-                });
-                
-                if (result.success) {
-                    alert(`✅ 感谢您的回复！\n\n姓名：${name}\n我们已收到您的信息，期待与您相聚！💕`);
-                    
-                    e.target.reset();
-                    btn.disabled = false;
-                    btn.textContent = '提交回复 💕';
-                    createFirework();
-                }
-            } catch (err) {
-                console.error('提交失败:', err);
-                alert('❌ 提交失败，请检查网络连接');
-                btn.disabled = false;
-                btn.textContent = '提交回复 💕';
-            }
-        }
-        
-        // 烟花效果
-        function createFirework() {
-            const colors = ['#dc143c', '#ff6b8a', '#ffd700', '#ff69b4', '#9370db'];
-            
-            for (let i = 0; i < 30; i++) {
-                const firework = document.createElement('div');
-                firework.className = 'firework';
-                firework.style.background = colors[Math.floor(Math.random() * colors.length)];
-                firework.style.left = '50%';
-                firework.style.top = '50%';
-                document.body.appendChild(firework);
-                
-                const angle = (i / 30) * 360;
-                const velocity = Math.random() * 100 + 50;
-                const vx = Math.cos(angle * Math.PI / 180) * velocity;
-                const vy = Math.sin(angle * Math.PI / 180) * velocity;
-                
-                let x = 0, y = 0, opacity = 1;
-                
-                const animate = () => {
-                    x += vx * 0.1;
-                    y += vy * 0.1;
-                    opacity -= 0.02;
-                    
-                    firework.style.transform = `translate(${x}px, ${y}px)`;
-                    firework.style.opacity = opacity;
-                    
-                    if (opacity > 0) {
-                        requestAnimationFrame(animate);
-                    } else {
-                        firework.remove();
-                    }
-                };
-                
-                animate();
-            }
-        }
-        
-        // 点击页面创建小爱心
-        document.addEventListener('click', (e) => {
-            if (e.target.closest('.photo-item') || e.target.closest('.lightbox')) return;
-            
-            const heart = document.createElement('div');
-            heart.textContent = '💕';
-            heart.style.position = 'fixed';
-            heart.style.left = e.clientX + 'px';
-            heart.style.top = e.clientY + 'px';
-            heart.style.fontSize = '20px';
-            heart.style.pointerEvents = 'none';
-            heart.style.zIndex = '9999';
-            heart.style.animation = 'heartPop 1s ease-out forwards';
-            document.body.appendChild(heart);
-            
-            setTimeout(() => heart.remove(), 1000);
-        });
-        
-        // 添加爱心弹出动画
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes heartPop {
-                0% { transform: scale(0.5); opacity: 1; }
-                100% { transform: scale(1.5) translateY(-50px); opacity: 0; }
-            }
-        `;
-        document.head.appendChild(style);
-    </script>
+      }, { rootMargin: '120px 0px' });
+      tiles.forEach(tile => observer.observe(tile));
+    };
+    revealImages();
+
+    // 倒计时：婚礼时间固定为 2026-10-01 10:18（东八区）。
+    const weddingTime = new Date('2026-10-01T10:18:00+08:00').getTime();
+    function updateCountdown() {
+      const remaining = Math.max(0, weddingTime - Date.now());
+      const values = {
+        days: Math.floor(remaining / 86400000),
+        hours: Math.floor(remaining / 3600000) % 24,
+        minutes: Math.floor(remaining / 60000) % 60,
+        seconds: Math.floor(remaining / 1000) % 60
+      };
+      Object.entries(values).forEach(([unit, value]) => {
+        const node = document.querySelector(`[data-unit="${unit}"]`);
+        if (node) node.textContent = String(value).padStart(2, '0');
+      });
+    }
+    updateCountdown();
+    window.setInterval(updateCountdown, 1000);
+
+    // 视频弹窗：preload=none，点击后才写入 src；关闭时暂停并重置到 0 秒。
+    const modal = document.getElementById('video-modal');
+    const modalVideo = document.getElementById('modal-video');
+    const modalCaption = document.getElementById('modal-caption');
+    const closeButton = document.getElementById('modal-close');
+    let lastTrigger = null;
+
+    function closeVideoModal() {
+      modalVideo.pause();
+      modalVideo.currentTime = 0;
+      modalVideo.removeAttribute('src');
+      modalVideo.load();
+      modal.classList.remove('is-open');
+      modal.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('modal-open');
+      if (lastTrigger) lastTrigger.focus();
+    }
+
+    function openVideoModal(trigger) {
+      lastTrigger = trigger;
+      modalVideo.poster = trigger.dataset.poster || '';
+      modalVideo.src = trigger.dataset.video;
+      modalCaption.textContent = trigger.dataset.title || '';
+      modal.classList.add('is-open');
+      modal.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('modal-open');
+      modalVideo.load();
+      // 不自动播放：用户进入浮层后仍需点击视频自身的播放按钮。
+    }
+
+    document.querySelectorAll('.video-card').forEach(card => {
+      card.addEventListener('click', () => openVideoModal(card));
+    });
+    closeButton.addEventListener('click', closeVideoModal);
+    modal.addEventListener('click', event => {
+      if (event.target === modal) closeVideoModal();
+    });
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && modal.classList.contains('is-open')) closeVideoModal();
+    });
+  </script>
 </body>
 </html>
