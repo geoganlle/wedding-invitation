@@ -90,6 +90,32 @@
     }
     .small-note { color: var(--muted); font-size: .78rem; line-height: 1.9; }
 
+    .music-toggle {
+      position: fixed;
+      z-index: 80;
+      top: max(1rem, env(safe-area-inset-top));
+      right: max(1rem, calc((100vw - 1180px) / 2 + 1rem));
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      min-height: 2.45rem;
+      padding: .55rem .85rem;
+      border: 1px solid rgba(255,255,255,.72);
+      border-radius: 999px;
+      color: #fff;
+      background: rgba(52,35,23,.30);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      box-shadow: 0 5px 18px rgba(40,24,12,.12);
+      cursor: pointer;
+      font-size: .75rem;
+      letter-spacing: .04em;
+      transition: background .25s ease, transform .2s ease;
+    }
+    .music-toggle:hover, .music-toggle.is-playing { background: rgba(52,35,23,.64); }
+    .music-toggle:active { transform: scale(.96); }
+    #bg-music { display: none; }
+
     /* ==================== ① 封面头图 ==================== */
     .cover {
       position: relative;
@@ -340,6 +366,45 @@
     .video-section .video-cards.video-cards--single { grid-template-columns: 1fr; }
     .video-card--landscape, .video-card--landscape img { min-height: clamp(15rem, 42vw, 29rem); }
     .video-card--landscape img { aspect-ratio: 16 / 9; }
+    .inline-video-card {
+      position: relative;
+      overflow: hidden;
+      border-radius: .5rem;
+      background: #251c16;
+      box-shadow: var(--shadow);
+    }
+    .inline-video {
+      display: block;
+      width: 100%;
+      height: auto;
+      background: #16110d;
+      object-fit: contain;
+    }
+    .inline-video-card.video-card--portrait { width: min(100%, 17rem); justify-self: end; }
+    .inline-video-card.video-card--portrait .inline-video { aspect-ratio: 9 / 16; }
+    .inline-video-card.video-card--landscape, .inline-video-card.video-card--landscape .inline-video { width: 100%; aspect-ratio: 16 / 9; }
+    .inline-video-card .video-card-copy { pointer-events: none; }
+    .inline-play {
+      position: absolute;
+      z-index: 3;
+      top: 1rem;
+      right: 1rem;
+      display: grid;
+      width: 2.85rem;
+      height: 2.85rem;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.82);
+      border-radius: 50%;
+      color: #fff;
+      background: rgba(0,0,0,.28);
+      cursor: pointer;
+      font-size: 1.05rem;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .inline-play.is-hidden { opacity: 0; pointer-events: none; }
+    .inline-play:active { transform: scale(.94); }
+    .inline-video-card.is-playing .video-card-copy { opacity: .28; }
+
 
     /* ==================== ④ 视频区：点击后黑色浮层播放 ==================== */
     .video-section { padding: clamp(4rem, 8vw, 7rem) 0 0; }
@@ -426,6 +491,8 @@
       .info-spread, .story-intro { grid-template-columns: 1fr; gap: 2.2rem; }
       .early-film { grid-template-columns: 1fr minmax(8.5rem, 11rem); gap: 1rem; }
       .early-film .video-card { width: 100%; }
+      .inline-video-card.video-card--portrait { width: min(100%, 18rem); justify-self: end; }
+      .inline-video-card.video-card--landscape { width: 100%; }
       .info-spread { padding-top: 3.3rem; }
       .chapter-heading { grid-template-columns: 3rem minmax(0, 1fr); }
       .chapter-heading p { grid-column: 2; }
@@ -458,6 +525,9 @@
       .text-card { min-height: 12rem; padding: 1rem; }
       .early-film { display: block; }
       .early-film .video-card { width: min(100%, 14rem); margin: 1.5rem auto 0; }
+      .inline-video-card.video-card--portrait { width: min(100%, 19rem); margin: 1.5rem auto 0; }
+      .inline-video-card.video-card--landscape { width: 100%; }
+      .music-toggle { right: .75rem; top: max(.75rem, env(safe-area-inset-top)); padding: .5rem .7rem; }
       .video-cards { grid-template-columns: 1fr; }
       .video-card, .video-card img { min-height: 14rem; }
       .chapter-note { grid-template-columns: 1fr; gap: .35rem; }
@@ -470,6 +540,10 @@
   </style>
 </head>
 <body>
+  <button class="music-toggle" id="music-toggle" type="button" aria-label="播放或暂停婚礼背景音乐" aria-pressed="false">♫ 开启音乐</button>
+  <audio id="bg-music" preload="auto" autoplay loop playsinline webkit-playsinline>
+    <source src="./assets/music/05_Wedding_Harp_Francisco_Alvear.mp3" type="audio/mpeg">
+  </audio>
   <main class="page">
     <!-- ① 封面头图：替换 src 为新人主婚纱照的绝对 HTTPS 地址 -->
     <header class="cover" id="top">
@@ -506,7 +580,7 @@
         <div class="info-details">
           <div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">公历 2026 年 10 月 1 日<br>星期四 · 农历丙午年八月廿一</span></div>
           <div class="detail-row"><span class="detail-label">TIME</span><span class="detail-value">上午 10:18 · 吉时</span></div>
-          <div class="detail-row"><span class="detail-label">PLACE</span><span class="detail-value">甘肃省天水市<br>百宴廷宴会中心</span></div>
+          <div class="detail-row"><span class="detail-label">PLACE</span><span class="detail-value">百宴廷宴会中心（天水店）<br>瀚庭名苑二期商业 2-3 层</span></div>
           <!-- 导航入口统一放到页面最底部 -->
         </div>
       </section>
@@ -516,13 +590,15 @@
         <div class="early-film-copy">
           <p class="eyebrow">A SHORT NOTE FROM THAT DAY</p>
           <h2 id="early-film-title" class="serif">先看这一段</h2>
-          <p>一段竖屏花絮，像从那一天寄来的一张小小明信片。点击封面，慢慢看。</p>
+          <p>一段竖屏花絮，像从那一天寄来的一张小小明信片。点击播放，慢慢看。</p>
         </div>
-        <button class="video-card video-card--portrait" type="button" data-video="./assets/videos/video-02.mp4" data-title="竖屏花絮 · 从那一天寄来的一张明信片" data-poster="./assets/photos/photo-49.jpg">
-          <img src="./assets/photos/photo-49.jpg" alt="竖屏花絮封面" loading="lazy">
-          <span class="play-mark" aria-hidden="true">▶</span>
-          <span class="video-card-copy"><small>FILM 02 · A NOTE</small><strong>一段花絮</strong></span>
-        </button>
+        <div class="inline-video-card video-card--portrait" data-video-card>
+          <video class="inline-video" controls playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-49.jpg" aria-label="竖屏花絮 · 从那一天寄来的一张明信片">
+            <source src="./assets/videos/video-02.mp4" type="video/mp4">
+          </video>
+          <button class="inline-play" type="button" aria-label="播放竖屏花絮">▶</button>
+          <div class="video-card-copy"><small>FILM 02 · A NOTE</small><strong>一段花絮</strong></div>
+        </div>
       </section>
 
       <!-- 倒计时与故事总导语 -->
@@ -552,14 +628,16 @@
       <section class="video-section video-section--footer" id="films" aria-labelledby="films-title">
         <div class="video-section-heading">
           <h2 id="films-title" class="serif">最后，再看一遍风景</h2>
-          <p>把这段外景短片留到最后。点击封面播放，愿你看到时也正好有空。</p>
+          <p>把这段外景短片留到最后。页面内直接播放，手机上点一下即可观看。</p>
         </div>
         <div class="video-cards video-cards--single">
-          <button class="video-card video-card--landscape" type="button" data-video="./assets/videos/video-01.mp4" data-title="外景短片 · 把风景留在身后" data-poster="./assets/photos/photo-02.jpg">
-            <img src="./assets/photos/photo-02.jpg" alt="外景短片封面" loading="lazy">
-            <span class="play-mark" aria-hidden="true">▶</span>
-            <span class="video-card-copy"><small>FILM 01 · OUTDOOR</small><strong>把风景留在身后</strong></span>
-          </button>
+          <div class="inline-video-card video-card--landscape" data-video-card>
+            <video class="inline-video" controls playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-02.jpg" aria-label="外景短片 · 把风景留在身后">
+              <source src="./assets/videos/video-01.mp4" type="video/mp4">
+            </video>
+            <button class="inline-play" type="button" aria-label="播放外景短片">▶</button>
+            <div class="video-card-copy"><small>FILM 01 · OUTDOOR</small><strong>把风景留在身后</strong></div>
+          </div>
         </div>
       </section>
 
@@ -574,31 +652,23 @@
         <div>
           <p class="eyebrow">MEET US THERE</p>
           <h2 class="serif">到这里见面</h2>
-          <p>婚礼当天，我们在天水百宴廷等你。点击按钮打开地图导航。</p>
+          <p>婚礼当天，我们在百宴廷宴会中心（天水店）等你。点击按钮打开地图导航。</p>
         </div>
-        <a class="map-button" href="https://uri.amap.com/search?keyword=%E5%A4%A9%E6%B0%B4%E7%99%BE%E5%AE%B4%E4%BA%AD%E5%AE%B4%E4%BC%9A%E4%B8%AD%E5%BF%83" target="_blank" rel="noopener">打开地图导航</a>
+        <a class="map-button" href="https://surl.amap.com/m4vZISG1y4wR" target="_blank" rel="noopener">打开地图导航</a>
       </section>
     </div>
     <footer>2026.10.01 · 天水百宴廷宴会中心</footer>
   </main>
 
-  <!-- 视频黑色浮层：关闭时 pause() + currentTime=0 -->
-  <div class="modal" id="video-modal" role="dialog" aria-modal="true" aria-label="视频播放窗口" aria-hidden="true">
-    <div class="modal-dialog">
-      <button class="modal-close" id="modal-close" type="button" aria-label="关闭视频">×</button>
-      <video class="modal-video" id="modal-video" controls playsinline webkit-playsinline preload="none"></video>
-      <p class="modal-caption" id="modal-caption"></p>
-    </div>
-  </div>
 
   <script>
     /*
       ==================== 资源替换说明 ====================
       1. 封面：替换 .cover-photo 的 src。
       2. 故事照片：PHOTO_URLS 仅保留适合本版构图的精选照片。
-      3. 视频：当前已替换为 assets/videos/video-01.mp4 和 video-02.mp4；如更换素材，替换 data-video / data-poster。
+      3. 视频：页面内直接播放，替换对应 video source 和 poster 即可。
       4. OG：替换 head 内 og:url、og:image、canonical 等地址。
-      5. 地图：替换 .map-button 的 href。
+      5. 地图：当前为百宴廷宴会中心（天水店）高德短链接。
     */
 
     // 49 张真实婚纱照，已按海边旅拍→林间白纱→山野花环婚礼的内容顺序编排。
@@ -758,49 +828,96 @@
     updateCountdown();
     window.setInterval(updateCountdown, 1000);
 
-    // 视频弹窗：preload=none，点击后才写入 src；关闭时暂停并重置到 0 秒。
-    const modal = document.getElementById('video-modal');
-    const modalVideo = document.getElementById('modal-video');
-    const modalCaption = document.getElementById('modal-caption');
-    const closeButton = document.getElementById('modal-close');
-    let lastTrigger = null;
-
-    function closeVideoModal() {
-      modalVideo.pause();
-      modalVideo.currentTime = 0;
-      modalVideo.autoplay = false;
-      modalVideo.removeAttribute('src');
-      modalVideo.load();
-      modal.classList.remove('is-open');
-      modal.setAttribute('aria-hidden', 'true');
-      document.body.classList.remove('modal-open');
-      if (lastTrigger) lastTrigger.focus();
+    // 背景音乐：打开页面先尝试自动播放；微信策略阻止时，首次触摸/点击会自动重试。
+    const music = document.getElementById('bg-music');
+    const musicToggle = document.getElementById('music-toggle');
+    let musicStarted = false;
+    let musicManuallyPaused = false;
+    function updateMusicButton(playing) {
+      musicToggle.classList.toggle('is-playing', playing);
+      musicToggle.setAttribute('aria-pressed', playing ? 'true' : 'false');
+      musicToggle.textContent = playing ? '♫ 音乐播放中' : '♫ 开启音乐';
     }
+    async function startMusic(fromGesture = false) {
+      if (musicManuallyPaused && !fromGesture) return false;
+      try {
+        music.volume = .42;
+        await music.play();
+        musicStarted = true;
+        musicManuallyPaused = false;
+        updateMusicButton(true);
+        return true;
+      } catch (error) {
+        updateMusicButton(false);
+        return false;
+      }
+    }
+    musicToggle.addEventListener('click', async () => {
+      if (music.paused) {
+        await startMusic(true);
+      } else {
+        music.pause();
+        musicManuallyPaused = true;
+        updateMusicButton(false);
+      }
+    });
+    music.addEventListener('play', () => updateMusicButton(true));
+    music.addEventListener('pause', () => updateMusicButton(false));
+    updateMusicButton(false);
+    startMusic(false);
+    const unlockMusic = () => { if (!musicStarted && !musicManuallyPaused) startMusic(true); };
+    ['touchend', 'pointerup', 'keydown'].forEach(eventName => {
+      document.addEventListener(eventName, unlockMusic, { passive: true, once: false });
+    });
 
-    function openVideoModal(trigger) {
-      lastTrigger = trigger;
-      modalVideo.poster = trigger.dataset.poster || '';
-      modalVideo.src = trigger.dataset.video;
-      modalCaption.textContent = trigger.dataset.title || '';
-      modal.classList.add('is-open');
-      modal.setAttribute('aria-hidden', 'false');
-      document.body.classList.add('modal-open');
-      modalVideo.load();
-      modalVideo.play().catch(() => {
-        modalCaption.textContent = `${trigger.dataset.title || '这段视频'} · 点击播放器中的播放按钮`;
+    // 视频直接在页面内播放，不再打开浮层；点击圆形按钮或原生播放器即可播放。
+    document.querySelectorAll('[data-video-card]').forEach(card => {
+      const video = card.querySelector('.inline-video');
+      const playButton = card.querySelector('.inline-play');
+      if (!video || !playButton) return;
+      const syncVideoState = () => {
+        const playing = !video.paused && !video.ended;
+        card.classList.toggle('is-playing', playing);
+        playButton.classList.toggle('is-hidden', playing);
+        playButton.textContent = playing ? '❚❚' : '▶';
+        playButton.setAttribute('aria-label', playing ? '暂停视频' : '播放视频');
+      };
+      playButton.addEventListener('click', event => {
+        event.stopPropagation();
+        if (video.paused || video.ended) video.play().catch(() => {});
+        else video.pause();
       });
-    }
+      video.addEventListener('play', syncVideoState);
+      video.addEventListener('pause', syncVideoState);
+      video.addEventListener('ended', syncVideoState);
+      video.addEventListener('error', () => {
+        playButton.classList.remove('is-hidden');
+        playButton.textContent = '重试';
+      });
+      syncVideoState();
+    });
 
-    document.querySelectorAll('.video-card').forEach(card => {
-      card.addEventListener('click', () => openVideoModal(card));
+    // 页面打开后缓慢下滚；用户触摸、滑动、按键或点击视频后立即停止。
+    let autoScrollTimer = null;
+    let autoScrollStopped = false;
+    const stopAutoScroll = () => {
+      autoScrollStopped = true;
+      if (autoScrollTimer) window.clearInterval(autoScrollTimer);
+      autoScrollTimer = null;
+    };
+    const startAutoScroll = () => {
+      if (autoScrollStopped || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      autoScrollTimer = window.setInterval(() => {
+        const root = document.scrollingElement || document.documentElement;
+        const max = Math.max(0, root.scrollHeight - window.innerHeight);
+        if (root.scrollTop >= max - 2) return stopAutoScroll();
+        root.scrollTop = Math.min(root.scrollTop + 1, max);
+      }, 55);
+    };
+    ['touchstart', 'wheel', 'pointerdown', 'keydown'].forEach(eventName => {
+      document.addEventListener(eventName, stopAutoScroll, { passive: true, once: true });
     });
-    closeButton.addEventListener('click', closeVideoModal);
-    modal.addEventListener('click', event => {
-      if (event.target === modal) closeVideoModal();
-    });
-    document.addEventListener('keydown', event => {
-      if (event.key === 'Escape' && modal.classList.contains('is-open')) closeVideoModal();
-    });
+    window.setTimeout(startAutoScroll, 1800);
   </script>
 </body>
 </html>
