@@ -324,6 +324,23 @@
     }
     .chapter-note strong { color: var(--accent); font-weight: 400; letter-spacing: .16em; }
 
+    /* ==================== 灵活版面与前置竖版视频 ==================== */
+    .early-film {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(10rem, 15rem);
+      gap: clamp(1.5rem, 6vw, 5rem);
+      align-items: center;
+      padding: clamp(2.7rem, 6vw, 5.5rem) 0;
+      border-bottom: 1px solid var(--line);
+    }
+    .early-film-copy h2 { margin: 0 0 .9rem; font: 400 clamp(2rem, 4.5vw, 4rem)/1.2 var(--serif); }
+    .early-film-copy p:not(.eyebrow) { max-width: 29rem; margin: 0; color: var(--muted); font-size: .9rem; line-height: 2; }
+    .early-film .video-card { width: min(100%, 15rem); justify-self: end; aspect-ratio: 9 / 16; min-height: 0; }
+    .early-film .video-card img { min-height: 0; aspect-ratio: 9 / 16; object-fit: cover; }
+    .video-cards--single { grid-template-columns: 1fr; }
+    .video-card--landscape, .video-card--landscape img { min-height: clamp(15rem, 42vw, 29rem); }
+    .video-card--landscape img { aspect-ratio: 16 / 9; }
+
     /* ==================== ④ 视频区：点击后黑色浮层播放 ==================== */
     .video-section { padding: clamp(4rem, 8vw, 7rem) 0 0; }
     .video-section-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: end; padding-bottom: 1.2rem; border-bottom: 1px solid var(--line); }
@@ -382,6 +399,8 @@
     /* ==================== 移动端：微信内置浏览器优先 ==================== */
     @media (max-width: 760px) {
       .info-spread, .story-intro { grid-template-columns: 1fr; gap: 2.2rem; }
+      .early-film { grid-template-columns: 1fr minmax(8.5rem, 11rem); gap: 1rem; }
+      .early-film .video-card { width: 100%; }
       .info-spread { padding-top: 3.3rem; }
       .chapter-heading { grid-template-columns: 3rem minmax(0, 1fr); }
       .chapter-heading p { grid-column: 2; }
@@ -408,6 +427,8 @@
       .tile--panorama { aspect-ratio: 1.6 / 1; }
       .tile--portrait { aspect-ratio: .76 / 1; }
       .text-card { min-height: 12rem; padding: 1rem; }
+      .early-film { display: block; }
+      .early-film .video-card { width: min(100%, 14rem); margin: 1.5rem auto 0; }
       .video-cards { grid-template-columns: 1fr; }
       .video-card, .video-card img { min-height: 14rem; }
       .chapter-note { grid-template-columns: 1fr; gap: .35rem; }
@@ -427,7 +448,7 @@
       <div class="cover-copy">
         <p class="eyebrow">OUR DAY · 2026.10.01</p>
         <h1>顾振刚 &amp; 赵国艳</h1>
-        <p class="cover-subtitle">从海风抵达山野</p>
+        <p class="cover-subtitle">我们在十月见面</p>
         <div class="cover-meta" aria-label="婚礼摘要">
           <span>2026 年 10 月 1 日</span>
           <span>星期四 · 10:18</span>
@@ -440,9 +461,9 @@
       <!-- ② 婚礼核心信息 -->
       <section class="info-spread" aria-labelledby="info-title">
         <div class="info-copy">
-          <p class="eyebrow">A NEW CHAPTER BEGINS</p>
-          <h2 id="info-title" class="serif">从此，故事有了我们</h2>
-          <p>从湖边的晚霞、车窗里的风，到山野花环下的白色礼服，我们把一路走来的片段收进这一封请柬。谢谢你来，见证我们把喜欢写成日常，把日常走成以后。</p>
+          <p class="eyebrow">OUR DAY</p>
+          <h2 id="info-title" class="serif">这一天，想和你分享</h2>
+          <p>一路走来，我们拍下了很多照片。它们没有严格的顺序，只是刚好记住了那些一起看过的风景。十月一日，欢迎来天水，和我们见面。</p>
           <!-- 简约新中式手绘线稿甜点插画 -->
           <svg class="dessert-doodle" viewBox="0 0 220 130" role="img" aria-label="手绘甜点插画" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M51 53h118l-7 53H58l-7-53Z"/>
@@ -462,12 +483,26 @@
         </div>
       </section>
 
+      <!-- 竖版视频提前出现：点击封面后在黑色浮层中播放 -->
+      <section class="early-film" id="early-film" aria-labelledby="early-film-title">
+        <div class="early-film-copy">
+          <p class="eyebrow">A SHORT NOTE FROM THAT DAY</p>
+          <h2 id="early-film-title" class="serif">先看这一段</h2>
+          <p>一段竖屏花絮，像从那一天寄来的一张小小明信片。点击封面，慢慢看。</p>
+        </div>
+        <button class="video-card video-card--portrait" type="button" data-video="./assets/videos/video-02.mp4" data-title="竖屏花絮 · 从那一天寄来的一张明信片" data-poster="./assets/photos/photo-49.jpg">
+          <img src="./assets/photos/photo-49.jpg" alt="竖屏花絮封面" loading="lazy">
+          <span class="play-mark" aria-hidden="true">▶</span>
+          <span class="video-card-copy"><small>FILM 02 · A NOTE</small><strong>一段花絮</strong></span>
+        </button>
+      </section>
+
       <!-- 倒计时与故事总导语 -->
       <section class="story-intro" aria-labelledby="story-title">
         <div>
-          <p class="eyebrow">A NEWSPAPER OF US</p>
-          <h2 id="story-title" class="serif">从海风，到山野</h2>
-          <p>先是海边的风，后来是林间的光，最后我们在雪山和花环之间，把名字放在了同一页。</p>
+          <p class="eyebrow">OUR STORY</p>
+          <h2 id="story-title" class="serif">把一路的风景，留给你</h2>
+          <p>照片没有严格的顺序，都是我们想留住的片段。十月一日，希望你也在。</p>
         </div>
         <div class="countdown" aria-label="婚礼倒计时">
           <p class="countdown-title">COUNTING DOWN TO THE DAY</p>
@@ -480,41 +515,34 @@
         </div>
       </section>
 
-      <!-- ③ 爱情故事核心区：JS 根据章节数据生成 48 张报纸式照片卡片 -->
+      <!-- ③ 照片故事：精选照片以不等大小版面展开 -->
       <section id="story" aria-label="爱情故事时间线">
         <div id="story-chapters"></div>
       </section>
 
-      <!-- ④ 视频弹窗模块 -->
-      <section class="video-section" id="films" aria-labelledby="films-title">
+      <!-- 横版视频放在页面最底部，作为故事的收尾 -->
+      <section class="video-section video-section--footer" id="films" aria-labelledby="films-title">
         <div class="video-section-heading">
-          <h2 id="films-title" class="serif">两段影像，留住风和光</h2>
-          <p>点击封面打开黑色浮层播放。视频不会自动播放，关闭时会暂停并重置进度。</p>
+          <h2 id="films-title" class="serif">最后，再看一遍风景</h2>
+          <p>把这段外景短片留到最后。点击封面播放，愿你看到时也正好有空。</p>
         </div>
-        <div class="video-cards">
-          <!-- 真实视频：海边/旅拍素材，部署后使用本地相对 HTTPS 路径 -->
-          <button class="video-card" type="button" data-video="./assets/videos/video-01.mp4" data-title="外景短片 · 海风、车窗与晚霞" data-poster="./assets/photos/photo-03.jpg">
-            <img src="./assets/photos/photo-03.jpg" alt="海边外景短片封面" loading="lazy">
+        <div class="video-cards video-cards--single">
+          <button class="video-card video-card--landscape" type="button" data-video="./assets/videos/video-01.mp4" data-title="外景短片 · 把风景留在身后" data-poster="./assets/photos/photo-02.jpg">
+            <img src="./assets/photos/photo-02.jpg" alt="外景短片封面" loading="lazy">
             <span class="play-mark" aria-hidden="true">▶</span>
-            <span class="video-card-copy"><small>FILM 01 · OUTDOOR</small><strong>外景短片</strong></span>
-          </button>
-          <!-- 真实视频：山野婚礼素材，部署后使用本地相对 HTTPS 路径 -->
-          <button class="video-card" type="button" data-video="./assets/videos/video-02.mp4" data-title="婚礼花絮 · 山野花环下的这一天" data-poster="./assets/photos/photo-43.jpg">
-            <img src="./assets/photos/photo-43.jpg" alt="山野婚礼花絮封面" loading="lazy">
-            <span class="play-mark" aria-hidden="true">▶</span>
-            <span class="video-card-copy"><small>FILM 02 · HIGHLIGHT</small><strong>花絮短片</strong></span>
+            <span class="video-card-copy"><small>FILM 01 · OUTDOOR</small><strong>把风景留在身后</strong></span>
           </button>
         </div>
       </section>
 
       <section class="closing" aria-label="邀请结语">
-        <p class="eyebrow">THANK YOU FOR BEING HERE</p>
-        <h2 class="serif">现场见，敬请光临</h2>
-        <p>愿你带着轻松的心情来，带着一份开心回去。我们在天水百宴廷等你，一起把这一场山野里的相逢，过成值得记住的日子。</p>
+        <p class="eyebrow">SEE YOU IN TIANSHUI</p>
+        <h2 class="serif">十月一日，天水见</h2>
+        <p>如果你愿意，请来和我们一起吃顿饭，看看这一天，也祝福我们。</p>
         <p class="signature serif">顾振刚 · 赵国艳</p>
       </section>
     </div>
-    <footer>2026.10.01 · 天水百宴廷宴会中心 · 山野见</footer>
+    <footer>2026.10.01 · 天水百宴廷宴会中心</footer>
   </main>
 
   <!-- 视频黑色浮层：关闭时 pause() + currentTime=0 -->
@@ -530,7 +558,7 @@
     /*
       ==================== 资源替换说明 ====================
       1. 封面：替换 .cover-photo 的 src。
-      2. 故事照片：替换 PHOTO_URLS 数组中的 49 个本地真实照片地址。
+      2. 故事照片：PHOTO_URLS 仅保留适合本版构图的精选照片。
       3. 视频：当前已替换为 assets/videos/video-01.mp4 和 video-02.mp4；如更换素材，替换 data-video / data-poster。
       4. OG：替换 head 内 og:url、og:image、canonical 等地址。
       5. 地图：替换 .map-button 的 href。
@@ -541,138 +569,85 @@
     const PHOTO_URLS = [
       './assets/photos/photo-01.jpg',
       './assets/photos/photo-02.jpg',
-      './assets/photos/photo-03.jpg',
-      './assets/photos/photo-04.jpg',
-      './assets/photos/photo-05.jpg',
       './assets/photos/photo-06.jpg',
-      './assets/photos/photo-07.jpg',
       './assets/photos/photo-08.jpg',
-      './assets/photos/photo-09.jpg',
       './assets/photos/photo-10.jpg',
       './assets/photos/photo-11.jpg',
-      './assets/photos/photo-12.jpg',
       './assets/photos/photo-13.jpg',
-      './assets/photos/photo-14.jpg',
-      './assets/photos/photo-15.jpg',
       './assets/photos/photo-16.jpg',
-      './assets/photos/photo-17.jpg',
-      './assets/photos/photo-18.jpg',
       './assets/photos/photo-19.jpg',
       './assets/photos/photo-20.jpg',
       './assets/photos/photo-21.jpg',
-      './assets/photos/photo-22.jpg',
       './assets/photos/photo-23.jpg',
       './assets/photos/photo-24.jpg',
       './assets/photos/photo-25.jpg',
-      './assets/photos/photo-26.jpg',
       './assets/photos/photo-27.jpg',
       './assets/photos/photo-28.jpg',
-      './assets/photos/photo-29.jpg',
       './assets/photos/photo-30.jpg',
-      './assets/photos/photo-31.jpg',
-      './assets/photos/photo-32.jpg',
       './assets/photos/photo-33.jpg',
       './assets/photos/photo-34.jpg',
-      './assets/photos/photo-35.jpg',
       './assets/photos/photo-36.jpg',
-      './assets/photos/photo-37.jpg',
       './assets/photos/photo-38.jpg',
-      './assets/photos/photo-39.jpg',
-      './assets/photos/photo-40.jpg',
       './assets/photos/photo-41.jpg',
       './assets/photos/photo-42.jpg',
       './assets/photos/photo-43.jpg',
       './assets/photos/photo-44.jpg',
-      './assets/photos/photo-45.jpg',
       './assets/photos/photo-46.jpg',
       './assets/photos/photo-47.jpg',
-      './assets/photos/photo-48.jpg',
-      './assets/photos/photo-49.jpg'
+      './assets/photos/photo-49.jpg',
     ];
 
     const CHAPTERS = [
       {
-        number: '01', title: '海风抵达之前', subtitle: 'THE FIRST LIGHT',
-        lead: '故事从海边开始。夕阳落下来，我们站在同一片风里，先学会并肩看远方，再慢慢学会把手交给彼此。',
-        note: '照片 01—05：晚霞、湖岸和两个人刚好同框的第一幕。',
+        number: '01', title: '从一场晚风开始', subtitle: 'A QUIET BEGINNING',
+        lead: '最初没有宏大的开场，只是夕阳、湖面，以及身边多了一个人。',
         photos: [
-          { i: 0, type: 'half', span: 5, caption: '晚霞把我们照成同一种颜色' },
-          { i: 1, type: 'half', span: 7, caption: '风从湖面吹来，我们没有急着说话' },
-          { i: 2, type: 'panorama', span: 12, caption: '在光落下的地方，第一次认真看向彼此' },
-          { i: 3, type: 'third', span: 4, caption: '把夕阳留在身后' },
-          { i: 4, type: 'third', span: 4, caption: '一起看向湖的另一边' },
-          { i: 5, type: 'third', span: 4, caption: '故事从这里有了方向' }
+          { i: 0, type: 'half', span: 5, caption: '晚风把我们带到同一片光里' },
+          { i: 1, type: 'half', span: 7, caption: '那天，我们并肩看了很久' },
+          { i: 2, type: 'panorama', span: 12, caption: '从这里开始，身边一直有你' }
         ]
       },
       {
-        number: '02', title: '沿着海岸线一起走', subtitle: 'ON THE SAME ROAD',
-        lead: '后来我们开着车，穿过风吹过的草地和一段段空旷公路。车窗外一直在变，身边的人一直是你。',
-        note: '照片 06—20：车窗、海岸、公路和一段不赶时间的旅程。',
+        number: '02', title: '去远一点的地方', subtitle: 'ON THE SAME ROAD',
+        lead: '我们开过车，吹过风，也在一些没有安排的下午里，慢慢把彼此放进生活。',
         photos: [
-          { i: 6, type: 'wide', span: 8, caption: '把车停在风景旁边' },
-          { i: 7, type: 'third', span: 4, caption: '从车窗看见彼此' },
-          { i: 8, type: 'half', span: 6, caption: '坐在车边，也坐在同一片晴天里' },
-          { i: 9, type: 'half', span: 6, caption: '沿着海岸线慢慢走' },
-          { i: 10, type: 'wide', span: 7, caption: '公路很长，刚好够我们说很多话' },
-          { i: 11, type: 'third', span: 5, caption: '你在车里，我在镜头外' },
-          { i: 12, type: 'half', span: 6, caption: '风把衣角吹起来' },
-          { i: 13, type: 'half', span: 6, caption: '把远方收进一张照片' },
-          { i: 14, type: 'wide', span: 8, caption: '回头就能看见你' },
-          { i: 15, type: 'third', span: 4, caption: '海边的一个下午' },
-          { i: 16, type: 'portrait', span: 4, caption: '望远镜里，还是那片海' },
-          { i: 17, type: 'portrait', span: 4, caption: '站在同一片草地上' },
-          { i: 18, type: 'third', span: 4, caption: '向前走，也向彼此靠近' },
-          { i: 19, type: 'half', span: 6, caption: '旅程从来不只关于目的地' }
+          { i: 3, type: 'wide', span: 8, caption: '把车停在风景旁边' },
+          { i: 4, type: 'third', span: 4, caption: '沿着海岸线慢慢走' },
+          { i: 5, type: 'half', span: 6, caption: '你在车里，我在镜头外' },
+          { i: 6, type: 'half', span: 6, caption: '公路很长，刚好够我们说很多话' },
+          { i: 7, type: 'portrait', span: 4, caption: '把远方收进一张照片' },
+          { i: 8, type: 'wide', span: 8, caption: '回头就能看见你' },
+          { i: 9, type: 'third', span: 4, caption: '旅程从来不只关于目的地' }
         ]
       },
       {
-        number: '03', title: '换上白色，走进林间', subtitle: 'INTO THE WOODS',
-        lead: '海边的风之后，是林间的光。白色礼服穿过树影，像把“以后”从一句话，慢慢变成了可以看见的样子。',
-        note: '照片 21—27：树影、白纱和走向彼此的安静时刻。',
+        number: '03', title: '走进树影和花', subtitle: 'INTO THE WOODS',
+        lead: '从海边到林间，从日常到婚礼，喜欢渐渐有了更具体的样子。',
         photos: [
-          { i: 20, type: 'wide', span: 7, caption: '光从树叶之间落下来' },
-          { i: 21, type: 'third', span: 5, caption: '在林间，先看见你' },
-          { i: 22, type: 'portrait', span: 4, caption: '白纱经过一小片树影' },
-          { i: 23, type: 'portrait', span: 4, caption: '靠近一点，再靠近一点' },
-          { i: 24, type: 'third', span: 4, caption: '走在同一条林间小路上' },
-          { i: 25, type: 'panorama', span: 12, caption: '树影替我们保管这份安静' },
-          { i: 26, type: 'portrait', span: 4, caption: '白色，是今天的答案' }
+          { i: 10, type: 'wide', span: 8, caption: '光从树叶之间落下来' },
+          { i: 11, type: 'portrait', span: 4, caption: '白纱经过一小片树影' },
+          { i: 12, type: 'portrait', span: 4, caption: '靠近一点，再靠近一点' },
+          { i: 13, type: 'wide', span: 8, caption: '走在同一条林间小路上' },
+          { i: 14, type: 'panorama', span: 12, caption: '花环在山谷里开成一扇门' }
         ]
       },
       {
-        number: '04', title: '花环下，写下名字', subtitle: 'UNDER THE FLOWERS',
-        lead: '当花环、群山和阳光一起出现，我们终于站到了故事里最像婚礼的一页。不是盛大的喧哗，而是很确定地牵住对方。',
-        note: '照片 28—35：花环、山谷、戒指和两个人正式成为“我们”的瞬间。',
+        number: '04', title: '这一页，写下我们', subtitle: 'THE DAY WE CHOOSE',
+        lead: '花环、山谷和白色礼服都在场。更重要的是，我们也在场，准备把以后认真过下去。',
         photos: [
-          { i: 27, type: 'panorama', span: 12, caption: '花环在山谷里开成一扇门' },
-          { i: 28, type: 'half', span: 6, caption: '在花与山之间相视而笑' },
-          { i: 29, type: 'half', span: 6, caption: '这一幕，风也替我们记得' },
-          { i: 30, type: 'wide', span: 7, caption: '并肩站在花环下' },
-          { i: 31, type: 'third', span: 5, caption: '把仪式放进山野' },
-          { i: 32, type: 'wide', span: 7, caption: '交换的不只是戒指，还有以后' },
-          { i: 33, type: 'portrait', span: 5, caption: '白纱与花枝一起落在肩头' },
-          { i: 34, type: 'panorama', span: 12, caption: '两只手，写下同一个答案' }
-        ]
-      },
-      {
-        number: '05', title: '山风知道答案', subtitle: 'THE ANSWER IS US',
-        lead: '最后一组照片里，有山、有花、有远景，也有我们终于不再需要解释的笑。谢谢你来到这封请柬的最后一页，也来到我们新的开始。',
-        note: '照片 36—49：从相拥、回望到并肩远眺，故事在这里暂时停顿，生活从这里继续。',
-        photos: [
-          { i: 35, type: 'wide', span: 8, caption: '这一刻，我们都在笑' },
-          { i: 36, type: 'portrait', span: 4, caption: '把花环和山风留在身后' },
-          { i: 37, type: 'wide', span: 8, caption: '走进花影深处' },
-          { i: 38, type: 'portrait', span: 4, caption: '回头时，你就在这里' },
-          { i: 39, type: 'portrait', span: 4, caption: '白纱在山谷里展开' },
-          { i: 40, type: 'wide', span: 8, caption: '把一生的风景，分一半给你' },
-          { i: 41, type: 'half', span: 6, caption: '我们一起看过的远方' },
-          { i: 42, type: 'half', span: 6, caption: '花环之外，仍然是山' },
-          { i: 43, type: 'wide', span: 8, caption: '我向你走来，你向我微笑' },
-          { i: 44, type: 'portrait', span: 4, caption: '一回头，就是满眼的光' },
-          { i: 45, type: 'portrait', span: 4, caption: '把拥抱留在这页' },
-          { i: 46, type: 'wide', span: 8, caption: '故事还会继续，下一页见' },
-          { i: 47, type: 'half', span: 6, caption: '顾振刚 · 赵国艳' },
-          { i: 48, type: 'portrait', span: 6, caption: '2026.10.01 · 天水百宴廷' }
+          { i: 15, type: 'half', span: 7, caption: '把仪式放进山野' },
+          { i: 16, type: 'third', span: 5, caption: '在花与山之间相视而笑' },
+          { i: 17, type: 'portrait', span: 4, caption: '白纱与花枝一起落在肩头' },
+          { i: 18, type: 'wide', span: 8, caption: '交换的不只是戒指，还有以后' },
+          { i: 19, type: 'panorama', span: 12, caption: '两个人，写下同一个答案' },
+          { i: 20, type: 'wide', span: 8, caption: '这一刻，我们都在笑' },
+          { i: 21, type: 'portrait', span: 4, caption: '把拥抱留在这页' },
+          { i: 22, type: 'half', span: 6, caption: '风景很远，我们靠得很近' },
+          { i: 23, type: 'half', span: 6, caption: '故事还会继续' },
+          { i: 24, type: 'wide', span: 8, caption: '下一页，继续一起写' },
+          { i: 25, type: 'portrait', span: 4, caption: '顾振刚 · 赵国艳' },
+          { i: 26, type: 'half', span: 6, caption: '十月一日，天水见' },
+          { i: 27, type: 'half', span: 6, caption: '谢谢你来' }
         ]
       }
     ];
@@ -697,7 +672,7 @@
       img.loading = 'lazy';
       img.decoding = 'async';
       const caption = document.createElement('figcaption');
-      caption.innerHTML = `${item.caption || '我们的照片'}<span>${String(item.i + 1).padStart(2, '0')}</span>`;
+      caption.textContent = item.caption || '我们的照片';
       figure.append(img, caption);
       return figure;
     }
@@ -713,7 +688,6 @@
         </header>
         <p class="chapter-lead">${chapter.lead}</p>
         <div class="editorial-grid"></div>
-        <div class="chapter-note"><strong>旁白 · ${chapter.number}</strong><span>${chapter.note}</span></div>
       `;
       const grid = section.querySelector('.editorial-grid');
       chapter.photos.forEach(item => grid.appendChild(createPhotoTile(item, chapterIndex)));
