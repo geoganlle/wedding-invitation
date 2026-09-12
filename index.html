@@ -472,6 +472,8 @@
       padding: 0;
       accent-color: #ead8bd;
       cursor: pointer;
+      touch-action: none;
+      user-select: none;
       appearance: none;
       background: transparent;
     }
@@ -1004,6 +1006,7 @@
     let musicWasPlayingBeforeVideo = false;
     let musicManuallyPausedBeforeVideo = false;
     let videoPlaybackActive = false;
+    let videoSeeking = false;
     function updateMusicButton(playing) {
       musicToggle.classList.toggle('is-playing', playing);
       musicToggle.setAttribute('aria-pressed', playing ? 'true' : 'false');
@@ -1172,16 +1175,72 @@
         else video.pause();
       };
       const progress = card.querySelector('.video-progress input');
+      let progressDragging = false;
+      let progressShouldResume = false;
+      const updateVideoFromProgress = () => {
+        if (!progress || !Number.isFinite(video.duration) || video.duration <= 0) return;
+        video.currentTime = video.duration * (Number(progress.value) / 1000);
+        video.dataset.currentTime = String(video.currentTime || 0);
+      };
+      const updateProgressFromPointer = event => {
+        if (!progress || !progressDragging) return;
+        const rect = progress.getBoundingClientRect();
+        if (!rect.width) return;
+        const ratio = Math.max(0, Math.min(1, (event.clientX - rect.left) / rect.width));
+        progress.value = String(Math.round(ratio * 1000));
+        updateVideoFromProgress();
+      };
+      const finishProgressDrag = () => {
+        if (!progressDragging) return;
+        progressDragging = false;
+        videoSeeking = false;
+        card.classList.remove('is-seeking');
+        if (progress.releasePointerCapture && progress.hasPointerCapture?.(progress._pointerId)) {
+          progress.releasePointerCapture(progress._pointerId);
+        }
+        updateVideoFromProgress();
+        if (progressShouldResume) {
+          videoPlaybackActive = true;
+          const playPromise = video.play();
+          if (playPromise && typeof playPromise.catch === 'function') {
+            playPromise.catch(() => {
+              videoPlaybackActive = false;
+              updateVideoButton(video, button);
+              resumeBackgroundAfterVideo();
+            });
+          }
+        } else {
+          updateVideoButton(video, button);
+        }
+        progressShouldResume = false;
+      };
+      if (progress) {
+        progress.addEventListener('input', updateVideoFromProgress);
+        progress.addEventListener('pointerdown', event => {
+          if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+          event.preventDefault();
+          event.stopPropagation();
+          progressDragging = true;
+          videoSeeking = true;
+          // 拖动结束后按用户要求继续播放。
+          progressShouldResume = true;
+          progress._pointerId = event.pointerId;
+          if (progress.setPointerCapture) progress.setPointerCapture(event.pointerId);
+          if (progressShouldResume) video.pause();
+          card.classList.add('is-seeking');
+          updateProgressFromPointer(event);
+        });
+        progress.addEventListener('pointermove', event => {
+          if (!progressDragging) return;
+          event.preventDefault();
+          updateProgressFromPointer(event);
+        });
+        progress.addEventListener('pointerup', finishProgressDrag);
+        progress.addEventListener('pointercancel', finishProgressDrag);
+        progress.addEventListener('lostpointercapture', finishProgressDrag);
+      }
       let touchStartX = 0;
       let touchStartY = 0;
-      if (progress) {
-        progress.addEventListener('input', () => {
-          if (!Number.isFinite(video.duration) || video.duration <= 0) return;
-          video.currentTime = video.duration * (Number(progress.value) / 1000);
-          showVideoProgress(card);
-        });
-        progress.addEventListener('pointerdown', () => showVideoProgress(card));
-      }
       let suppressClickUntil = 0;
       video.addEventListener('click', event => {
         if (Date.now() < suppressClickUntil) return;
@@ -1226,7 +1285,7 @@
       video.addEventListener('pause', () => {
         videoPlaybackActive = false;
         updateVideoButton(video, button);
-        resumeBackgroundAfterVideo();
+        if (!videoSeeking) resumeBackgroundAfterVideo();
       });
       video.addEventListener('ended', () => {
         videoPlaybackActive = false;
