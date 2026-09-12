@@ -286,6 +286,9 @@
       gap: clamp(.55rem, 1.8vw, 1.1rem);
       align-items: stretch;
     }
+    .editorial-grid .tile {
+      min-width: 0;
+    }
     .tile {
       position: relative;
       grid-column: span var(--span, 6);
@@ -327,6 +330,49 @@
     .tile--third { aspect-ratio: 1 / 1.08; }
     .tile--portrait { aspect-ratio: .78 / 1; }
     .tile--panorama { grid-column: 1 / -1; aspect-ratio: 2.65 / 1; }
+    .photo-cluster {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: minmax(0, .78fr) minmax(0, 1.22fr);
+      gap: clamp(.55rem, 1.8vw, 1.1rem);
+      aspect-ratio: 1.65 / 1;
+      min-width: 0;
+    }
+    .photo-cluster__portrait,
+    .photo-cluster__side {
+      height: 100%;
+      min-height: 0;
+    }
+    .photo-cluster__portrait,
+    .photo-cluster__side .tile {
+      aspect-ratio: auto;
+    }
+    .photo-cluster__side {
+      display: grid;
+      grid-template-rows: repeat(2, minmax(0, 1fr));
+      gap: inherit;
+      min-width: 0;
+    }
+    .photo-cluster__side .tile { height: 100%; min-height: 0; }
+    .photo-cluster > .tile {
+      grid-column: auto !important;
+      width: auto;
+    }
+    .photo-cluster__portrait { grid-column: auto !important; }
+    .photo-cluster__side { grid-column: auto; }
+    .photo-cluster img { object-fit: cover; }
+    .photo-pair {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(.55rem, 1.8vw, 1.1rem);
+      min-width: 0;
+    }
+    .photo-pair .tile {
+      grid-column: auto !important;
+      aspect-ratio: .78 / 1;
+      min-height: 0;
+    }
     .text-card {
       grid-column: span var(--span, 4);
       display: flex;
@@ -500,6 +546,12 @@
       .final-actions .map-button { width: 100%; justify-content: center; margin-top: 1.25rem; }
       .video-section--footer .video-card--landscape { width: 100%; aspect-ratio: 16 / 9; min-height: 0; }
       .video-section--footer .video-card--landscape img { min-height: 0; }
+      .photo-cluster { grid-template-columns: minmax(0, .82fr) minmax(0, 1.18fr); gap: .65rem; }
+      .photo-cluster .tile { grid-column: auto !important; }
+      .photo-cluster__side { grid-column: auto !important; }
+      .photo-cluster__portrait { min-height: 0; }
+      .photo-cluster__side { gap: .65rem; }
+      .photo-cluster .tile figcaption { padding: 2rem .55rem .5rem; font-size: .58rem; letter-spacing: .05em; }
       .tile--wide { aspect-ratio: 1.35 / 1; }
       .tile--panorama { aspect-ratio: 1.6 / 1; }
       .tile--portrait { aspect-ratio: .76 / 1; }
@@ -576,7 +628,7 @@
         </div>
         <div class="inline-video-card video-card--portrait" data-video-card>
           <video class="inline-video" controls playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-49.jpg?v=compress-20260912" aria-label="竖屏花絮 · 从那一天寄来的一张明信片">
-            <source src="./assets/videos/video-02.mp4?v=compress-20260912" type="video/mp4">
+            <source src="./assets/videos/video-02.mp4?v=original-20260912" type="video/mp4">
           </video>
           <div class="video-card-copy"><small>FILM 02 · A NOTE</small><strong>一段花絮</strong></div>
         </div>
@@ -614,7 +666,7 @@
         <div class="video-cards video-cards--single">
           <div class="inline-video-card video-card--landscape" data-video-card>
             <video class="inline-video" controls playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-02.jpg?v=compress-20260912" aria-label="外景短片 · 把风景留在身后">
-              <source src="./assets/videos/video-01.mp4?v=compress-20260912" type="video/mp4">
+              <source src="./assets/videos/video-01.mp4?v=original-20260912" type="video/mp4">
             </video>
             <div class="video-card-copy"><small>FILM 01 · OUTDOOR</small><strong>把风景留在身后</strong></div>
           </div>
@@ -705,31 +757,54 @@
         number: '03', title: '走进树影和花', subtitle: 'INTO THE WOODS',
         lead: '从海边到林间，从日常到婚礼，喜欢渐渐有了更具体的样子。',
         photos: [
-          { i: 9, type: 'wide', span: 8, caption: '光从树叶之间落下来' },
-          { i: 10, type: 'portrait', span: 4, caption: '白纱经过一小片树影' },
-          { i: 11, type: 'portrait', span: 4, caption: '靠近一点，再靠近一点' },
-          { i: 12, type: 'wide', span: 8, caption: '走在同一条林间小路上' },
-          { i: 13, type: 'panorama', span: 12, caption: '花环在山谷里开成一扇门' }
+          { type: 'cluster', portrait: { i: 10, type: 'portrait', position: '50% center', caption: '白纱经过一小片树影' }, side: [
+            { i: 9, type: 'wide', position: 'center 45%', caption: '走在同一条林间小路上' },
+            { i: 12, type: 'wide', position: 'center 48%', caption: '光从树叶之间落下来' }
+          ] },
+          { type: 'pair', photos: [
+            { i: 11, type: 'portrait', position: '50% center', caption: '靠近一点，再靠近一点' },
+            { i: 13, type: 'portrait', position: '50% center', caption: '把远方收进一张照片' }
+          ] }
         ]
       },
       {
         number: '04', title: '这一页，写下我们', subtitle: 'THE DAY WE CHOOSE',
         lead: '花环、山谷和白色礼服都在场。更重要的是，我们也在场，准备把以后认真过下去。',
         photos: [
-          { i: 14, type: 'half', span: 7, caption: '把仪式放进山野' },
-          { i: 15, type: 'third', span: 5, caption: '在花与山之间相视而笑' },
-          { i: 16, type: 'portrait', span: 4, caption: '白纱与花枝一起落在肩头' },
-          { i: 17, type: 'wide', span: 8, caption: '交换的不只是戒指，还有以后' },
-          { i: 18, type: 'panorama', span: 12, caption: '两个人，写下同一个答案' },
-          { i: 19, type: 'wide', span: 8, caption: '这一刻，我们都在笑' },
-          { i: 20, type: 'portrait', span: 4, caption: '把拥抱留在这页' },
-          { i: 21, type: 'half', span: 6, caption: '风景很远，我们靠得很近' },
-          { i: 22, type: 'half', span: 6, caption: '故事还会继续' }
+          { type: 'cluster', portrait: { i: 16, type: 'portrait', position: '52% center', caption: '白纱与花枝一起落在肩头' }, side: [
+            { i: 15, type: 'wide', position: 'center 42%', caption: '在花与山之间相视而笑' },
+            { i: 17, type: 'wide', position: 'center 48%', caption: '这一刻，我们都在笑' }
+          ] },
+          { type: 'cluster', portrait: { i: 21, type: 'portrait', position: '48% center', caption: '把拥抱留在这页' }, side: [
+            { i: 18, type: 'wide', position: 'center 45%', caption: '交换的不只是戒指，还有以后' },
+            { i: 19, type: 'wide', position: 'center 48%', caption: '风景很远，我们靠得很近' }
+          ] },
+          { type: 'cluster', portrait: { i: 22, type: 'portrait', position: '50% center', caption: '故事还会继续' }, side: [
+            { i: 20, type: 'wide', position: 'center 44%', caption: '把这一天留在山谷里' },
+            { i: 14, type: 'wide', position: 'center 50%', caption: '两个人，写下同一个答案' }
+          ] }
         ]
       }
     ];
 
     const storyRoot = document.getElementById('story-chapters');
+
+    function createPhotoFigure(item, chapterIndex) {
+      const figure = document.createElement('figure');
+      figure.className = `tile tile--${item.type || 'wide'}`;
+      figure.style.setProperty('--span', item.span || 6);
+      figure.dataset.chapter = chapterIndex + 1;
+      const img = document.createElement('img');
+      img.src = PHOTO_URLS[item.i];
+      img.alt = item.caption || `婚礼照片 ${item.i + 1}`;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      if (item.position) img.style.objectPosition = item.position;
+      const caption = document.createElement('figcaption');
+      caption.textContent = item.caption || '我们的照片';
+      figure.append(img, caption);
+      return figure;
+    }
 
     function createPhotoTile(item, chapterIndex) {
       if (item.type === 'text') {
@@ -739,19 +814,25 @@
         card.innerHTML = `<span class="text-kicker">${item.kicker}</span><h4>${item.title}</h4><p>${item.body}</p>`;
         return card;
       }
-      const figure = document.createElement('figure');
-      figure.className = `tile tile--${item.type}`;
-      figure.style.setProperty('--span', item.span || 6);
-      figure.dataset.chapter = chapterIndex + 1;
-      const img = document.createElement('img');
-      img.src = PHOTO_URLS[item.i];
-      img.alt = item.caption || `婚礼照片 ${item.i + 1}`;
-      img.loading = 'lazy';
-      img.decoding = 'async';
-      const caption = document.createElement('figcaption');
-      caption.textContent = item.caption || '我们的照片';
-      figure.append(img, caption);
-      return figure;
+      if (item.type === 'cluster') {
+        const cluster = document.createElement('div');
+        cluster.className = 'photo-cluster';
+        const portrait = createPhotoFigure(item.portrait, chapterIndex);
+        portrait.classList.add('photo-cluster__portrait');
+        cluster.appendChild(portrait);
+        const side = document.createElement('div');
+        side.className = 'photo-cluster__side';
+        item.side.forEach(photo => side.appendChild(createPhotoFigure(photo, chapterIndex)));
+        cluster.appendChild(side);
+        return cluster;
+      }
+      if (item.type === 'pair') {
+        const pair = document.createElement('div');
+        pair.className = 'photo-pair';
+        item.photos.forEach(photo => pair.appendChild(createPhotoFigure(photo, chapterIndex)));
+        return pair;
+      }
+      return createPhotoFigure(item, chapterIndex);
     }
 
     CHAPTERS.forEach((chapter, chapterIndex) => {
@@ -832,6 +913,7 @@
     let musicStarted = false;
     let musicMutedAutoplay = false;
     let musicManuallyPaused = false;
+    let musicWasPlayingBeforeVideo = false;
     function updateMusicButton(playing) {
       musicToggle.classList.toggle('is-playing', playing);
       musicToggle.setAttribute('aria-pressed', playing ? 'true' : 'false');
@@ -880,12 +962,36 @@
     music.addEventListener('play', () => updateMusicButton(true));
     music.addEventListener('pause', () => updateMusicButton(false));
     updateMusicButton(false);
-    const tryStartMusic = () => { if ((!musicStarted || musicMutedAutoplay) && !musicManuallyPaused) startMusic(true); };
+    const tryStartMusic = event => {
+      // 原生 video controls 也会冒泡 pointerup/touchend；视频手势不能被背景音乐解锁逻辑抢走。
+      const target = event && event.target;
+      if (target && typeof target.closest === 'function' && target.closest('.inline-video-card')) return;
+      if ((!musicStarted || musicMutedAutoplay) && !musicManuallyPaused) startMusic(true);
+    };
     startMusic(false);
     window.addEventListener('load', () => startMusic(false), { once: true });
     document.addEventListener('WeixinJSBridgeReady', tryStartMusic, { once: true });
     ['touchend', 'pointerup', 'keydown'].forEach(eventName => {
-      document.addEventListener(eventName, tryStartMusic, { passive: true, once: false });
+      document.addEventListener(eventName, tryStartMusic, { passive: true });
+    });
+
+    document.querySelectorAll('.inline-video').forEach(video => {
+      video.addEventListener('play', () => {
+        musicWasPlayingBeforeVideo = !music.paused;
+        if (musicWasPlayingBeforeVideo) {
+          music.pause();
+          musicMutedAutoplay = false;
+          updateMusicButton(false);
+        }
+      });
+      video.addEventListener('pause', () => {
+        if (musicWasPlayingBeforeVideo && !musicManuallyPaused) startMusic(false);
+        musicWasPlayingBeforeVideo = false;
+      });
+      video.addEventListener('ended', () => {
+        if (musicWasPlayingBeforeVideo && !musicManuallyPaused) startMusic(false);
+        musicWasPlayingBeforeVideo = false;
+      });
     });
 
     // 页面打开后缓慢下滚；延迟启动并避开初始 pointerdown，用户真正触摸/滚动后才停止。
