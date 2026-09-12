@@ -444,6 +444,72 @@
     }
     .video-play-button.is-playing:hover { opacity: 0; }
     .video-play-button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
+    .video-progress {
+      position: absolute;
+      right: .8rem;
+      bottom: .7rem;
+      left: .8rem;
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      height: 1.8rem;
+      opacity: 0;
+      transform: translateY(.3rem);
+      pointer-events: none;
+      transition: opacity .2s ease, transform .2s ease;
+    }
+    .inline-video-card.is-paused .video-progress,
+    .inline-video-card.is-seeking .video-progress {
+      opacity: 1;
+      transform: translateY(0);
+      pointer-events: auto;
+    }
+    .video-progress input {
+      display: block;
+      width: 100%;
+      height: 1.8rem;
+      margin: 0;
+      padding: 0;
+      accent-color: #ead8bd;
+      cursor: pointer;
+      appearance: none;
+      background: transparent;
+    }
+    .video-progress input::-webkit-slider-runnable-track {
+      height: .22rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.5);
+    }
+    .video-progress input::-webkit-slider-thumb {
+      width: .82rem;
+      height: .82rem;
+      margin-top: -.3rem;
+      border: 1px solid rgba(255,255,255,.95);
+      border-radius: 50%;
+      background: #ead8bd;
+      box-shadow: 0 .15rem .55rem rgba(0,0,0,.28);
+      appearance: none;
+    }
+    .video-progress input::-moz-range-track {
+      height: .22rem;
+      border-radius: 999px;
+      background: rgba(255,255,255,.5);
+    }
+    .video-progress input::-moz-range-progress {
+      height: .22rem;
+      border-radius: 999px;
+      background: #ead8bd;
+    }
+    .video-progress input::-moz-range-thumb {
+      width: .82rem;
+      height: .82rem;
+      border: 1px solid rgba(255,255,255,.95);
+      border-radius: 50%;
+      background: #ead8bd;
+      box-shadow: 0 .15rem .55rem rgba(0,0,0,.28);
+    }
+    .inline-video-card.is-playing .video-progress input:focus-visible { outline: 2px solid #fff; outline-offset: .3rem; }
+    .inline-video-card.is-paused .video-progress input:focus-visible { outline: 2px solid var(--accent); outline-offset: .3rem; }
     .inline-video {
       display: block;
       width: 100%;
@@ -646,6 +712,9 @@
             <source src="https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/video-02.mp4" type="video/mp4">
           </video>
           <button class="video-play-button" type="button" aria-label="播放竖屏花絮" aria-pressed="false">▶</button>
+          <label class="video-progress" aria-label="竖屏花絮播放进度">
+            <input type="range" min="0" max="1000" step="1" value="0" aria-label="拖动调整竖屏花絮进度">
+          </label>
           <div class="video-card-copy"><small>FILM 02 · A NOTE</small><strong>一段花絮</strong></div>
         </div>
       </section>
@@ -684,6 +753,9 @@
               <source src="https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/video-01.mp4" type="video/mp4">
             </video>
             <button class="video-play-button" type="button" aria-label="播放外景短片" aria-pressed="false">▶</button>
+            <label class="video-progress" aria-label="外景短片播放进度">
+              <input type="range" min="0" max="1000" step="1" value="0" aria-label="拖动调整外景短片进度">
+            </label>
             <div class="video-card-copy"><small>FILM 01 · OUTDOOR</small><strong>把风景留在身后</strong></div>
           </div>
         </div>
@@ -1011,14 +1083,39 @@
       musicManuallyPaused = false;
       return startMusic(true);
     }
+    function updateVideoProgress(video, progress) {
+      if (!progress || !Number.isFinite(video.duration) || video.duration <= 0) return;
+      progress.value = String(Math.max(0, Math.min(1000, Math.round(video.currentTime / video.duration * 1000))));
+    }
+    function showVideoProgress(card, temporary = false) {
+      if (!card) return;
+      card.classList.add('is-seeking');
+      if (temporary) {
+        window.clearTimeout(card._progressHideTimer);
+        card._progressHideTimer = window.setTimeout(() => {
+          if (card.classList.contains('is-playing')) card.classList.remove('is-seeking');
+        }, 1400);
+      }
+    }
     function updateVideoButton(video, button) {
       const playing = !video.paused && !video.ended;
       const card = video.closest('.inline-video-card');
+      const progress = card && card.querySelector('.video-progress input');
       button.classList.toggle('is-playing', playing);
       button.setAttribute('aria-pressed', playing ? 'true' : 'false');
       button.setAttribute('aria-label', playing ? '暂停视频' : '播放视频');
       button.textContent = playing ? '❚❚' : '▶';
-      if (card) card.classList.toggle('is-playing', playing);
+      if (card) {
+        card.classList.toggle('is-playing', playing);
+        card.classList.toggle('is-paused', !playing);
+        if (playing) {
+          window.clearTimeout(card._progressHideTimer);
+          card.classList.remove('is-seeking');
+        } else {
+          card.classList.remove('is-seeking');
+        }
+      }
+      updateVideoProgress(video, progress);
       video.dataset.playing = playing ? 'true' : 'false';
       video.dataset.currentTime = String(video.currentTime || 0);
     }
@@ -1074,16 +1171,58 @@
         if (video.paused || video.ended) playVideo(video, button);
         else video.pause();
       };
-      video.addEventListener('click', toggleFromTouch);
-      video.addEventListener('touchend', toggleFromTouch, { passive: false });
+      const progress = card.querySelector('.video-progress input');
+      let touchStartX = 0;
+      let touchStartY = 0;
+      if (progress) {
+        progress.addEventListener('input', () => {
+          if (!Number.isFinite(video.duration) || video.duration <= 0) return;
+          video.currentTime = video.duration * (Number(progress.value) / 1000);
+          showVideoProgress(card);
+        });
+        progress.addEventListener('pointerdown', () => showVideoProgress(card));
+      }
+      let suppressClickUntil = 0;
+      video.addEventListener('click', event => {
+        if (Date.now() < suppressClickUntil) return;
+        toggleFromTouch(event);
+      });
+      video.addEventListener('touchstart', event => {
+        if (event.touches.length !== 1) return;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+      }, { passive: true });
+      video.addEventListener('touchend', event => {
+        if (event.target !== video || !event.changedTouches.length) return;
+        const touch = event.changedTouches[0];
+        const deltaX = touch.clientX - touchStartX;
+        const deltaY = touch.clientY - touchStartY;
+        if (Math.abs(deltaX) >= 28 && Math.abs(deltaX) > Math.abs(deltaY) * 1.15) {
+          event.preventDefault();
+          event.stopPropagation();
+          suppressClickUntil = Date.now() + 500;
+          if (Number.isFinite(video.duration) && video.duration > 0) {
+            const seekStep = Math.max(5, Math.min(15, video.duration * .08));
+            video.currentTime = Math.max(0, Math.min(video.duration, video.currentTime + (deltaX > 0 ? seekStep : -seekStep)));
+            updateVideoButton(video, button);
+            showVideoProgress(card, true);
+          }
+          return;
+        }
+        toggleFromTouch(event);
+      }, { passive: false });
       video.addEventListener('play', () => {
         videoPlaybackActive = true;
         pauseBackgroundForVideo();
         updateVideoButton(video, button);
       });
       video.addEventListener('timeupdate', () => {
+        const progress = card.querySelector('.video-progress input');
+        updateVideoProgress(video, progress);
         video.dataset.currentTime = String(video.currentTime || 0);
       });
+      video.addEventListener('loadedmetadata', () => updateVideoButton(video, button));
+      video.addEventListener('durationchange', () => updateVideoButton(video, button));
       video.addEventListener('pause', () => {
         videoPlaybackActive = false;
         updateVideoButton(video, button);
