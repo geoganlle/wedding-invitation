@@ -945,6 +945,7 @@
     let musicMutedAutoplay = false;
     let musicManuallyPaused = false;
     let musicWasPlayingBeforeVideo = false;
+    let musicManuallyPausedBeforeVideo = false;
     let videoPlaybackActive = false;
     function updateMusicButton(playing) {
       musicToggle.classList.toggle('is-playing', playing);
@@ -1004,13 +1005,22 @@
     document.addEventListener('WeixinJSBridgeReady', tryStartMusic, { once: true });
 
     function pauseBackgroundForVideo() {
-      const musicWasActive = !music.paused || musicMutedAutoplay;
-      if (musicWasActive) musicWasPlayingBeforeVideo = true;
+      // playVideo() 和 video 的 play 事件都会经过这里；只在一次视频会话开始时记录音乐状态。
+      if (!videoPlaybackActive) {
+        musicWasPlayingBeforeVideo = !music.paused || musicMutedAutoplay;
+        musicManuallyPausedBeforeVideo = musicManuallyPaused;
+      }
       music.pause();
       music.muted = false;
       musicMutedAutoplay = false;
       musicManuallyPaused = true;
       updateMusicButton(false);
+    }
+    async function resumeBackgroundAfterVideo() {
+      if (!musicWasPlayingBeforeVideo || musicManuallyPausedBeforeVideo || videoPlaybackActive) return;
+      musicWasPlayingBeforeVideo = false;
+      musicManuallyPaused = false;
+      await startMusic(true);
     }
     function unlockMusicFromButton() {
       musicManuallyPaused = false;
@@ -1058,6 +1068,7 @@
           videoPlaybackActive = false;
           if (card) card.classList.add('video-error');
           updateVideoButton(video, button);
+          resumeBackgroundAfterVideo();
         }
       }
     }
@@ -1091,10 +1102,12 @@
       video.addEventListener('pause', () => {
         videoPlaybackActive = false;
         updateVideoButton(video, button);
+        resumeBackgroundAfterVideo();
       });
       video.addEventListener('ended', () => {
         videoPlaybackActive = false;
         updateVideoButton(video, button);
+        resumeBackgroundAfterVideo();
       });
       video.addEventListener('error', () => {
         const card = video.closest('.inline-video-card');
