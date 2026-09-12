@@ -396,6 +396,31 @@
     .closing .signature { margin-top: 2rem; color: var(--accent); font: 400 1.4rem var(--serif); letter-spacing: .14em; }
     footer { padding: 2rem 1rem 3rem; color: var(--muted); font-size: .7rem; letter-spacing: .16em; text-align: center; }
 
+    /* ==================== V2 精修：完整行版式、视频兼容与底部导航 ==================== */
+    .editorial-grid { grid-auto-flow: row; }
+    .final-actions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 2rem;
+      margin-top: clamp(3rem, 7vw, 6rem);
+      padding: clamp(2rem, 5vw, 3.5rem) 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .final-actions h2 { margin: 0 0 .55rem; font: 400 clamp(1.9rem, 4vw, 3.2rem)/1.2 var(--serif); }
+    .final-actions p:not(.eyebrow) { max-width: 30rem; margin: 0; color: var(--muted); font-size: .85rem; line-height: 1.9; }
+    .final-actions .map-button { flex: 0 0 auto; margin: 0; padding: .9rem 1.3rem; }
+    .video-section--footer { padding-bottom: 0; }
+    .video-section--footer .video-card--landscape {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      min-height: 0;
+    }
+    .video-section--footer .video-card--landscape img { height: 100%; min-height: 0; aspect-ratio: auto; }
+    .modal-video { object-fit: contain; }
+    .modal-caption { min-height: 1.4em; }
+
     /* ==================== 移动端：微信内置浏览器优先 ==================== */
     @media (max-width: 760px) {
       .info-spread, .story-intro { grid-template-columns: 1fr; gap: 2.2rem; }
@@ -407,8 +432,8 @@
       .video-section-heading { display: block; }
       .video-section-heading p { margin-top: .8rem; }
       .editorial-grid { grid-template-columns: repeat(6, minmax(0, 1fr)); }
-      .tile { grid-column: span 3; }
-      .tile--panorama { grid-column: 1 / -1; }
+      .tile { grid-column: span 3 !important; }
+      .tile--panorama { grid-column: 1 / -1 !important; }
       .text-card { grid-column: span 3; }
       .text-card--wide { grid-column: 1 / -1; }
     }
@@ -420,9 +445,13 @@
       .cover-meta span { font-size: .68rem; }
       .chapter-heading { gap: .7rem; }
       .chapter-number { font-size: 1.1rem; }
-      .editorial-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .6rem; }
-      .tile, .text-card { grid-column: span 1; }
-      .tile--wide, .tile--panorama, .text-card--wide { grid-column: 1 / -1; }
+      .editorial-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .75rem; }
+      .tile, .text-card { grid-column: span 1 !important; }
+      .tile--panorama, .text-card--wide { grid-column: 1 / -1 !important; }
+      .final-actions { display: block; margin-top: 3.5rem; }
+      .final-actions .map-button { width: 100%; justify-content: center; margin-top: 1.25rem; }
+      .video-section--footer .video-card--landscape { width: 100%; aspect-ratio: 16 / 9; min-height: 0; }
+      .video-section--footer .video-card--landscape img { min-height: 0; }
       .tile--wide { aspect-ratio: 1.35 / 1; }
       .tile--panorama { aspect-ratio: 1.6 / 1; }
       .tile--portrait { aspect-ratio: .76 / 1; }
@@ -478,8 +507,7 @@
           <div class="detail-row"><span class="detail-label">DATE</span><span class="detail-value">公历 2026 年 10 月 1 日<br>星期四 · 农历丙午年八月廿一</span></div>
           <div class="detail-row"><span class="detail-label">TIME</span><span class="detail-value">上午 10:18 · 吉时</span></div>
           <div class="detail-row"><span class="detail-label">PLACE</span><span class="detail-value">甘肃省天水市<br>百宴廷宴会中心</span></div>
-          <!-- 将 MAP_LINK 替换为你最终确认的高德 / 腾讯地图导航地址 -->
-          <a class="map-button" href="https://uri.amap.com/search?keyword=%E5%A4%A9%E6%B0%B4%E7%99%BE%E5%AE%B4%E4%BA%AD%E5%AE%B4%E4%BC%9A%E4%B8%AD%E5%BF%83" target="_blank" rel="noopener">打开地图导航</a>
+          <!-- 导航入口统一放到页面最底部 -->
         </div>
       </section>
 
@@ -541,6 +569,15 @@
         <p>如果你愿意，请来和我们一起吃顿饭，看看这一天，也祝福我们。</p>
         <p class="signature serif">顾振刚 · 赵国艳</p>
       </section>
+
+      <section class="final-actions" aria-label="到场导航">
+        <div>
+          <p class="eyebrow">MEET US THERE</p>
+          <h2 class="serif">到这里见面</h2>
+          <p>婚礼当天，我们在天水百宴廷等你。点击按钮打开地图导航。</p>
+        </div>
+        <a class="map-button" href="https://uri.amap.com/search?keyword=%E5%A4%A9%E6%B0%B4%E7%99%BE%E5%AE%B4%E4%BA%AD%E5%AE%B4%E4%BC%9A%E4%B8%AD%E5%BF%83" target="_blank" rel="noopener">打开地图导航</a>
+      </section>
     </div>
     <footer>2026.10.01 · 天水百宴廷宴会中心</footer>
   </main>
@@ -576,24 +613,19 @@
       './assets/photos/photo-13.jpg',
       './assets/photos/photo-16.jpg',
       './assets/photos/photo-19.jpg',
-      './assets/photos/photo-20.jpg',
       './assets/photos/photo-21.jpg',
       './assets/photos/photo-23.jpg',
       './assets/photos/photo-24.jpg',
       './assets/photos/photo-25.jpg',
       './assets/photos/photo-27.jpg',
       './assets/photos/photo-28.jpg',
-      './assets/photos/photo-30.jpg',
       './assets/photos/photo-33.jpg',
       './assets/photos/photo-34.jpg',
       './assets/photos/photo-36.jpg',
-      './assets/photos/photo-38.jpg',
       './assets/photos/photo-41.jpg',
-      './assets/photos/photo-42.jpg',
       './assets/photos/photo-43.jpg',
       './assets/photos/photo-44.jpg',
       './assets/photos/photo-46.jpg',
-      './assets/photos/photo-47.jpg',
       './assets/photos/photo-49.jpg',
     ];
 
@@ -616,38 +648,33 @@
           { i: 5, type: 'half', span: 6, caption: '你在车里，我在镜头外' },
           { i: 6, type: 'half', span: 6, caption: '公路很长，刚好够我们说很多话' },
           { i: 7, type: 'portrait', span: 4, caption: '把远方收进一张照片' },
-          { i: 8, type: 'wide', span: 8, caption: '回头就能看见你' },
-          { i: 9, type: 'third', span: 4, caption: '旅程从来不只关于目的地' }
+          { i: 8, type: 'wide', span: 8, caption: '回头就能看见你' }
         ]
       },
       {
         number: '03', title: '走进树影和花', subtitle: 'INTO THE WOODS',
         lead: '从海边到林间，从日常到婚礼，喜欢渐渐有了更具体的样子。',
         photos: [
-          { i: 10, type: 'wide', span: 8, caption: '光从树叶之间落下来' },
-          { i: 11, type: 'portrait', span: 4, caption: '白纱经过一小片树影' },
-          { i: 12, type: 'portrait', span: 4, caption: '靠近一点，再靠近一点' },
-          { i: 13, type: 'wide', span: 8, caption: '走在同一条林间小路上' },
-          { i: 14, type: 'panorama', span: 12, caption: '花环在山谷里开成一扇门' }
+          { i: 9, type: 'wide', span: 8, caption: '光从树叶之间落下来' },
+          { i: 10, type: 'portrait', span: 4, caption: '白纱经过一小片树影' },
+          { i: 11, type: 'portrait', span: 4, caption: '靠近一点，再靠近一点' },
+          { i: 12, type: 'wide', span: 8, caption: '走在同一条林间小路上' },
+          { i: 13, type: 'panorama', span: 12, caption: '花环在山谷里开成一扇门' }
         ]
       },
       {
         number: '04', title: '这一页，写下我们', subtitle: 'THE DAY WE CHOOSE',
         lead: '花环、山谷和白色礼服都在场。更重要的是，我们也在场，准备把以后认真过下去。',
         photos: [
-          { i: 15, type: 'half', span: 7, caption: '把仪式放进山野' },
-          { i: 16, type: 'third', span: 5, caption: '在花与山之间相视而笑' },
-          { i: 17, type: 'portrait', span: 4, caption: '白纱与花枝一起落在肩头' },
-          { i: 18, type: 'wide', span: 8, caption: '交换的不只是戒指，还有以后' },
-          { i: 19, type: 'panorama', span: 12, caption: '两个人，写下同一个答案' },
-          { i: 20, type: 'wide', span: 8, caption: '这一刻，我们都在笑' },
-          { i: 21, type: 'portrait', span: 4, caption: '把拥抱留在这页' },
-          { i: 22, type: 'half', span: 6, caption: '风景很远，我们靠得很近' },
-          { i: 23, type: 'half', span: 6, caption: '故事还会继续' },
-          { i: 24, type: 'wide', span: 8, caption: '下一页，继续一起写' },
-          { i: 25, type: 'portrait', span: 4, caption: '顾振刚 · 赵国艳' },
-          { i: 26, type: 'half', span: 6, caption: '十月一日，天水见' },
-          { i: 27, type: 'half', span: 6, caption: '谢谢你来' }
+          { i: 14, type: 'half', span: 7, caption: '把仪式放进山野' },
+          { i: 15, type: 'third', span: 5, caption: '在花与山之间相视而笑' },
+          { i: 16, type: 'portrait', span: 4, caption: '白纱与花枝一起落在肩头' },
+          { i: 17, type: 'wide', span: 8, caption: '交换的不只是戒指，还有以后' },
+          { i: 18, type: 'panorama', span: 12, caption: '两个人，写下同一个答案' },
+          { i: 19, type: 'wide', span: 8, caption: '这一刻，我们都在笑' },
+          { i: 20, type: 'portrait', span: 4, caption: '把拥抱留在这页' },
+          { i: 21, type: 'half', span: 6, caption: '风景很远，我们靠得很近' },
+          { i: 22, type: 'half', span: 6, caption: '故事还会继续' }
         ]
       }
     ];
@@ -741,6 +768,7 @@
     function closeVideoModal() {
       modalVideo.pause();
       modalVideo.currentTime = 0;
+      modalVideo.autoplay = false;
       modalVideo.removeAttribute('src');
       modalVideo.load();
       modal.classList.remove('is-open');
@@ -758,7 +786,9 @@
       modal.setAttribute('aria-hidden', 'false');
       document.body.classList.add('modal-open');
       modalVideo.load();
-      // 不自动播放：用户进入浮层后仍需点击视频自身的播放按钮。
+      modalVideo.play().catch(() => {
+        modalCaption.textContent = `${trigger.dataset.title || '这段视频'} · 点击播放器中的播放按钮`;
+      });
     }
 
     document.querySelectorAll('.video-card').forEach(card => {
