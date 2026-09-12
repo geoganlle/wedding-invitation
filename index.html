@@ -443,8 +443,12 @@
       transition: transform .2s ease, background .2s ease, opacity .2s ease;
     }
     .video-play-button:hover { transform: scale(1.06); background: rgba(36,24,17,.78); }
-    .video-play-button.is-playing { opacity: .16; }
-    .video-play-button.is-playing:hover { opacity: 1; }
+    .video-play-button.is-playing {
+      opacity: 0;
+      pointer-events: none;
+      transform: scale(.92);
+    }
+    .video-play-button.is-playing:hover { opacity: 0; }
     .video-play-button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
     .inline-video {
       display: block;
@@ -654,7 +658,7 @@
           <p>一段竖屏花絮，像从那一天寄来的一张小小明信片。点击播放，慢慢看。</p>
         </div>
         <div class="inline-video-card video-card--portrait" data-video-card>
-          <video class="inline-video" playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-49.jpg?v=compress-20260912" aria-label="竖屏花絮 · 从那一天寄来的一张明信片">
+          <video class="inline-video" playsinline webkit-playsinline preload="metadata" poster="./assets/videos/video-poster-02.jpg?v=poster-20260912" aria-label="竖屏花絮 · 从那一天寄来的一张明信片">
             <source src="./assets/videos/video-02.mp4?v=original-20260912" type="video/mp4">
           </video>
           <button class="video-play-button" type="button" aria-label="播放竖屏花絮" aria-pressed="false">▶</button>
@@ -693,7 +697,7 @@
         </div>
         <div class="video-cards video-cards--single">
           <div class="inline-video-card video-card--landscape" data-video-card>
-            <video class="inline-video" playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-02.jpg?v=compress-20260912" aria-label="外景短片 · 把风景留在身后">
+            <video class="inline-video" playsinline webkit-playsinline preload="metadata" poster="./assets/videos/video-poster-01.jpg?v=poster-20260912" aria-label="外景短片 · 把风景留在身后">
               <source src="./assets/videos/video-01.mp4?v=original-20260912" type="video/mp4">
             </video>
             <button class="video-play-button" type="button" aria-label="播放外景短片" aria-pressed="false">▶</button>
@@ -1070,10 +1074,14 @@
         if (video.paused || video.ended) playVideo(video, button);
         else video.pause();
       });
-      video.addEventListener('click', () => {
+      const toggleFromTouch = event => {
+        if (event.target !== video) return;
+        event.preventDefault();
         if (video.paused || video.ended) playVideo(video, button);
         else video.pause();
-      });
+      };
+      video.addEventListener('click', toggleFromTouch);
+      video.addEventListener('touchend', toggleFromTouch, { passive: false });
       video.addEventListener('play', () => {
         videoPlaybackActive = true;
         pauseBackgroundForVideo();
