@@ -420,12 +420,37 @@
       background: #251c16;
       box-shadow: var(--shadow);
     }
+    .video-play-button {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 4;
+      display: grid;
+      place-items: center;
+      width: 4rem;
+      height: 4rem;
+      margin: -2rem 0 0 -2rem;
+      padding: 0;
+      border: 1px solid rgba(255,255,255,.86);
+      border-radius: 50%;
+      color: #fff;
+      background: rgba(36,24,17,.58);
+      box-shadow: 0 .45rem 1.5rem rgba(0,0,0,.24);
+      font-size: 1.2rem;
+      cursor: pointer;
+      transition: transform .2s ease, background .2s ease, opacity .2s ease;
+    }
+    .video-play-button:hover { transform: scale(1.06); background: rgba(36,24,17,.78); }
+    .video-play-button.is-playing { opacity: .16; }
+    .video-play-button.is-playing:hover { opacity: 1; }
+    .video-play-button:focus-visible { outline: 2px solid #fff; outline-offset: 4px; }
     .inline-video {
       display: block;
       width: 100%;
       height: auto;
       background: #16110d;
       object-fit: contain;
+      cursor: pointer;
     }
     .inline-video-card.video-card--portrait { width: 100%; justify-self: stretch; }
     .inline-video-card.video-card--portrait .inline-video { width: 100%; aspect-ratio: 9 / 16; object-fit: contain; }
@@ -627,9 +652,10 @@
           <p>一段竖屏花絮，像从那一天寄来的一张小小明信片。点击播放，慢慢看。</p>
         </div>
         <div class="inline-video-card video-card--portrait" data-video-card>
-          <video class="inline-video" controls playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-49.jpg?v=compress-20260912" aria-label="竖屏花絮 · 从那一天寄来的一张明信片">
+          <video class="inline-video" playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-49.jpg?v=compress-20260912" aria-label="竖屏花絮 · 从那一天寄来的一张明信片">
             <source src="./assets/videos/video-02.mp4?v=original-20260912" type="video/mp4">
           </video>
+          <button class="video-play-button" type="button" aria-label="播放竖屏花絮" aria-pressed="false">▶</button>
           <div class="video-card-copy"><small>FILM 02 · A NOTE</small><strong>一段花絮</strong></div>
         </div>
       </section>
@@ -665,9 +691,10 @@
         </div>
         <div class="video-cards video-cards--single">
           <div class="inline-video-card video-card--landscape" data-video-card>
-            <video class="inline-video" controls playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-02.jpg?v=compress-20260912" aria-label="外景短片 · 把风景留在身后">
+            <video class="inline-video" playsinline webkit-playsinline preload="metadata" poster="./assets/photos/photo-02.jpg?v=compress-20260912" aria-label="外景短片 · 把风景留在身后">
               <source src="./assets/videos/video-01.mp4?v=original-20260912" type="video/mp4">
             </video>
+            <button class="video-play-button" type="button" aria-label="播放外景短片" aria-pressed="false">▶</button>
             <div class="video-card-copy"><small>FILM 01 · OUTDOOR</small><strong>把风景留在身后</strong></div>
           </div>
         </div>
@@ -962,36 +989,83 @@
     music.addEventListener('play', () => updateMusicButton(true));
     music.addEventListener('pause', () => updateMusicButton(false));
     updateMusicButton(false);
-    const tryStartMusic = event => {
-      // 原生 video controls 也会冒泡 pointerup/touchend；视频手势不能被背景音乐解锁逻辑抢走。
-      const target = event && event.target;
-      if (target && typeof target.closest === 'function' && target.closest('.inline-video-card')) return;
+    const tryStartMusic = () => {
       if ((!musicStarted || musicMutedAutoplay) && !musicManuallyPaused) startMusic(true);
     };
     startMusic(false);
     window.addEventListener('load', () => startMusic(false), { once: true });
     document.addEventListener('WeixinJSBridgeReady', tryStartMusic, { once: true });
-    ['touchend', 'pointerup', 'keydown'].forEach(eventName => {
-      document.addEventListener(eventName, tryStartMusic, { passive: true });
-    });
+
+    function pauseBackgroundForVideo() {
+      const musicWasActive = !music.paused || musicMutedAutoplay;
+      if (musicWasActive) musicWasPlayingBeforeVideo = true;
+      music.pause();
+      music.muted = false;
+      musicMutedAutoplay = false;
+      updateMusicButton(false);
+    }
+    function resumeBackgroundAfterVideo() {
+      if (musicWasPlayingBeforeVideo && !musicManuallyPaused) startMusic(false);
+      musicWasPlayingBeforeVideo = false;
+    }
+    function updateVideoButton(video, button) {
+      const playing = !video.paused && !video.ended;
+      const card = video.closest('.inline-video-card');
+      button.classList.toggle('is-playing', playing);
+      button.setAttribute('aria-pressed', playing ? 'true' : 'false');
+      button.setAttribute('aria-label', playing ? '暂停视频' : '播放视频');
+      button.textContent = playing ? '❚❚' : '▶';
+      if (card) card.classList.toggle('is-playing', playing);
+      video.dataset.playing = playing ? 'true' : 'false';
+      video.dataset.currentTime = String(video.currentTime || 0);
+    }
+    async function playVideo(video, button) {
+      pauseBackgroundForVideo();
+      try {
+        await video.play();
+        updateVideoButton(video, button);
+      } catch (error) {
+        const card = video.closest('.inline-video-card');
+        if (card) card.classList.add('video-error');
+        updateVideoButton(video, button);
+      }
+    }
 
     document.querySelectorAll('.inline-video').forEach(video => {
+      const card = video.closest('.inline-video-card');
+      const button = card && card.querySelector('.video-play-button');
+      if (!button) return;
+      button.addEventListener('click', event => {
+        event.preventDefault();
+        event.stopPropagation();
+        if (video.paused || video.ended) playVideo(video, button);
+        else video.pause();
+      });
+      video.addEventListener('click', () => {
+        if (video.paused || video.ended) playVideo(video, button);
+        else video.pause();
+      });
       video.addEventListener('play', () => {
-        musicWasPlayingBeforeVideo = !music.paused;
-        if (musicWasPlayingBeforeVideo) {
-          music.pause();
-          musicMutedAutoplay = false;
-          updateMusicButton(false);
-        }
+        pauseBackgroundForVideo();
+        updateVideoButton(video, button);
+      });
+      video.addEventListener('timeupdate', () => {
+        video.dataset.currentTime = String(video.currentTime || 0);
       });
       video.addEventListener('pause', () => {
-        if (musicWasPlayingBeforeVideo && !musicManuallyPaused) startMusic(false);
-        musicWasPlayingBeforeVideo = false;
+        updateVideoButton(video, button);
+        resumeBackgroundAfterVideo();
       });
       video.addEventListener('ended', () => {
-        if (musicWasPlayingBeforeVideo && !musicManuallyPaused) startMusic(false);
-        musicWasPlayingBeforeVideo = false;
+        updateVideoButton(video, button);
+        resumeBackgroundAfterVideo();
       });
+      video.addEventListener('error', () => {
+        const card = video.closest('.inline-video-card');
+        if (card) card.classList.add('video-error');
+        updateVideoButton(video, button);
+      });
+      updateVideoButton(video, button);
     });
 
     // 页面打开后缓慢下滚；延迟启动并避开初始 pointerdown，用户真正触摸/滚动后才停止。
