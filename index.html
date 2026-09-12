@@ -941,6 +941,7 @@
     let musicMutedAutoplay = false;
     let musicManuallyPaused = false;
     let musicWasPlayingBeforeVideo = false;
+    let videoPlaybackActive = false;
     function updateMusicButton(playing) {
       musicToggle.classList.toggle('is-playing', playing);
       musicToggle.setAttribute('aria-pressed', playing ? 'true' : 'false');
@@ -977,8 +978,10 @@
     }
     musicToggle.addEventListener('click', async event => {
       event.stopPropagation();
-      if (music.paused || musicMutedAutoplay) await startMusic(true);
-      else {
+      if (music.paused || musicMutedAutoplay) {
+        if (videoPlaybackActive) return;
+        await unlockMusicFromButton();
+      } else {
         music.pause();
         music.muted = false;
         musicMutedAutoplay = false;
@@ -1002,11 +1005,12 @@
       music.pause();
       music.muted = false;
       musicMutedAutoplay = false;
+      musicManuallyPaused = true;
       updateMusicButton(false);
     }
-    function resumeBackgroundAfterVideo() {
-      if (musicWasPlayingBeforeVideo && !musicManuallyPaused) startMusic(false);
-      musicWasPlayingBeforeVideo = false;
+    function unlockMusicFromButton() {
+      musicManuallyPaused = false;
+      return startMusic(true);
     }
     function updateVideoButton(video, button) {
       const playing = !video.paused && !video.ended;
@@ -1021,13 +1025,36 @@
     }
     async function playVideo(video, button) {
       pauseBackgroundForVideo();
+      videoPlaybackActive = true;
+      const card = video.closest('.inline-video-card');
+      if (card) card.classList.remove('video-error');
       try {
-        await video.play();
+        // 必须在用户点击的同一事件链中立即调用 play()，不能先 await canplay，否则移动端会丢失播放手势。
+        const playPromise = video.play();
+        if (playPromise && typeof playPromise.then === 'function') await playPromise;
         updateVideoButton(video, button);
       } catch (error) {
-        const card = video.closest('.inline-video-card');
-        if (card) card.classList.add('video-error');
-        updateVideoButton(video, button);
+        // 网络尚未准备好时再补一次加载；正常路径不等待加载，避免丢失用户手势。
+        try {
+          video.load();
+          await new Promise((resolve, reject) => {
+            const onReady = () => { cleanup(); resolve(); };
+            const onError = () => { cleanup(); reject(video.error || new Error('video load failed')); };
+            const cleanup = () => {
+              video.removeEventListener('canplay', onReady);
+              video.removeEventListener('error', onError);
+            };
+            video.addEventListener('canplay', onReady, { once: true });
+            video.addEventListener('error', onError, { once: true });
+            window.setTimeout(() => { cleanup(); reject(new Error('video load timeout')); }, 12000);
+          });
+          await video.play();
+          updateVideoButton(video, button);
+        } catch (retryError) {
+          videoPlaybackActive = false;
+          if (card) card.classList.add('video-error');
+          updateVideoButton(video, button);
+        }
       }
     }
 
@@ -1046,6 +1073,7 @@
         else video.pause();
       });
       video.addEventListener('play', () => {
+        videoPlaybackActive = true;
         pauseBackgroundForVideo();
         updateVideoButton(video, button);
       });
@@ -1053,12 +1081,12 @@
         video.dataset.currentTime = String(video.currentTime || 0);
       });
       video.addEventListener('pause', () => {
+        videoPlaybackActive = false;
         updateVideoButton(video, button);
-        resumeBackgroundAfterVideo();
       });
       video.addEventListener('ended', () => {
+        videoPlaybackActive = false;
         updateVideoButton(video, button);
-        resumeBackgroundAfterVideo();
       });
       video.addEventListener('error', () => {
         const card = video.closest('.inline-video-card');
