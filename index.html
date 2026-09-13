@@ -1305,30 +1305,6 @@
       updateVideoButton(video, button);
     });
 
-    // 页面打开后缓慢下滚；延迟启动并避开初始 pointerdown，用户真正触摸/滚动后才停止。
-    let autoScrollTimer = null;
-    let autoScrollStarted = false;
-    let autoScrollStopped = false;
-    const stopAutoScroll = () => {
-      if (!autoScrollStarted && !autoScrollTimer) return;
-      autoScrollStopped = true;
-      if (autoScrollTimer) window.clearInterval(autoScrollTimer);
-      autoScrollTimer = null;
-    };
-    const startAutoScroll = () => {
-      if (autoScrollStarted || autoScrollStopped || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-      autoScrollStarted = true;
-      const root = document.scrollingElement || document.documentElement;
-      autoScrollTimer = window.setInterval(() => {
-        const max = Math.max(0, root.scrollHeight - window.innerHeight);
-        if (max <= 0 || root.scrollTop >= max - 2) return stopAutoScroll();
-        root.scrollTop = Math.min(root.scrollTop + 1.6, max);
-      }, 50);
-    };
-    ['touchstart', 'wheel', 'keydown'].forEach(eventName => {
-      document.addEventListener(eventName, stopAutoScroll, { passive: true, once: true });
-    });
-    window.setTimeout(startAutoScroll, 2200);
   </script>
 </body>
 </html>
