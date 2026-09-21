@@ -311,8 +311,92 @@
       min-height: inherit;
       object-fit: cover;
       transition: transform .8s ease, filter .5s ease;
+      cursor: zoom-in;
     }
     .tile:hover img { transform: scale(1.035); filter: saturate(.92); }
+
+    .photo-lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 110;
+      display: none;
+      place-items: center;
+      padding: max(4.5rem, calc(env(safe-area-inset-top) + 3.5rem)) max(4.25rem, calc(env(safe-area-inset-right) + 3.25rem)) max(4rem, calc(env(safe-area-inset-bottom) + 2.75rem)) max(4.25rem, calc(env(safe-area-inset-left) + 3.25rem));
+      background: rgba(7, 5, 4, .94);
+      overscroll-behavior: contain;
+      touch-action: pan-y;
+    }
+    .photo-lightbox.is-open { display: grid; }
+    .photo-lightbox__image {
+      display: block;
+      width: auto;
+      height: auto;
+      max-width: 100%;
+      max-height: min(82svh, 900px);
+      object-fit: contain;
+      border-radius: .25rem;
+      box-shadow: 0 1rem 3rem rgba(0,0,0,.34);
+      cursor: zoom-out;
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .photo-lightbox__close,
+    .photo-lightbox__nav {
+      position: absolute;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255,255,255,.78);
+      color: #fff;
+      background: rgba(33,25,20,.82);
+      cursor: pointer;
+      line-height: 1;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .photo-lightbox__close {
+      top: max(1rem, env(safe-area-inset-top));
+      right: max(1rem, env(safe-area-inset-right));
+      width: 2.7rem;
+      height: 2.7rem;
+      border-radius: 50%;
+      font-size: 1.35rem;
+    }
+    .photo-lightbox__nav {
+      top: 50%;
+      width: 2.9rem;
+      height: 3.8rem;
+      border-radius: .35rem;
+      font-size: 1.7rem;
+      transform: translateY(-50%);
+    }
+    .photo-lightbox__nav--prev { left: max(.75rem, env(safe-area-inset-left)); }
+    .photo-lightbox__nav--next { right: max(.75rem, env(safe-area-inset-right)); }
+    .photo-lightbox__caption {
+      position: absolute;
+      right: 1rem;
+      bottom: max(1rem, env(safe-area-inset-bottom));
+      left: 1rem;
+      margin: 0;
+      color: #eee4d6;
+      font-size: .78rem;
+      text-align: center;
+      text-shadow: 0 1px 4px #000;
+    }
+    @media (max-width: 480px) {
+      .photo-lightbox {
+        padding: max(4.25rem, calc(env(safe-area-inset-top) + 3.25rem)) max(3.35rem, calc(env(safe-area-inset-right) + 2.5rem)) max(3.5rem, calc(env(safe-area-inset-bottom) + 2.25rem)) max(3.35rem, calc(env(safe-area-inset-left) + 2.5rem));
+      }
+      .photo-lightbox__image {
+        max-width: 100%;
+        max-height: 78svh;
+        border-radius: .15rem;
+      }
+      .photo-lightbox__close { width: 2.45rem; height: 2.45rem; }
+      .photo-lightbox__nav { width: 2.35rem; height: 3.2rem; font-size: 1.35rem; }
+      .photo-lightbox__nav--prev { left: max(.45rem, env(safe-area-inset-left)); }
+      .photo-lightbox__nav--next { right: max(.45rem, env(safe-area-inset-right)); }
+      .photo-lightbox__caption { font-size: .7rem; }
+    }
     .tile figcaption {
       position: absolute;
       right: 0;
@@ -664,6 +748,32 @@
       .chapter-note { grid-template-columns: 1fr; gap: .35rem; }
       .chapter-note strong { font-size: .7rem; }
     }
+    /* 第二章照片保持完整比例，文字说明放到照片下方，避免裁切遮挡人物。 */
+    .chapter:nth-of-type(2) .tile {
+      overflow: visible;
+      aspect-ratio: auto;
+      min-height: 0;
+    }
+    .chapter:nth-of-type(2) .tile img {
+      width: 100%;
+      height: auto;
+      min-height: 0;
+      aspect-ratio: 3 / 2;
+      object-fit: contain;
+      border-radius: .45rem;
+      background: var(--paper-deep);
+    }
+    .chapter:nth-of-type(2) .tile figcaption {
+      position: static;
+      padding: .55rem .1rem 0;
+      color: var(--muted);
+      background: none;
+      font-size: .68rem;
+      line-height: 1.5;
+      letter-spacing: .06em;
+      opacity: 1;
+    }
+
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
       *, *::before, *::after { transition-duration: .01ms !important; animation-duration: .01ms !important; }
@@ -787,6 +897,13 @@
     <footer>2026.10.01 · 天水百宴廷宴会中心</footer>
   </main>
 
+  <div class="photo-lightbox" id="photo-lightbox" role="dialog" aria-modal="true" aria-label="照片预览" aria-hidden="true">
+    <button class="photo-lightbox__close" id="photo-lightbox-close" type="button" aria-label="关闭照片预览">×</button>
+    <button class="photo-lightbox__nav photo-lightbox__nav--prev" id="photo-lightbox-prev" type="button" aria-label="上一张照片">‹</button>
+    <img class="photo-lightbox__image" id="photo-lightbox-image" alt="">
+    <button class="photo-lightbox__nav photo-lightbox__nav--next" id="photo-lightbox-next" type="button" aria-label="下一张照片">›</button>
+    <p class="photo-lightbox__caption" id="photo-lightbox-caption"></p>
+  </div>
 
   <script>
     /*
@@ -800,31 +917,33 @@
 
     // 49 张真实婚纱照，已按海边旅拍→林间白纱→山野花环婚礼的内容顺序编排。
     // 49 张真实婚纱照，按原始批次顺序进入故事时间线。
+    const PHOTO_BASE_URL = 'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/';
+    const PHOTO_VERSION = 'compress-20260912';
     const PHOTO_URLS = [
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-01.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-02.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-06.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-08.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-10.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-11.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-13.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-16.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-19.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-21.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-23.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-24.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-25.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-27.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-28.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-33.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-34.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-36.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-41.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-43.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-44.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-46.jpg?v=compress-20260912',
-      'https://cunchutong-1302648690.cos.ap-chengdu.myqcloud.com/wedding/20260912/original-photos/photo-49.jpg?v=compress-20260912',
-    ];
+      'photo-01.jpg',
+      'photo-02.jpg',
+      'photo-06.jpg',
+      'photo-08.jpg',
+      'photo-10.jpg',
+      'photo-11.jpg',
+      'photo-13.jpg',
+      'photo-16.jpg',
+      'photo-19.jpg',
+      'photo-21.jpg',
+      'photo-23.jpg',
+      'photo-24.jpg',
+      'photo-25.jpg',
+      'photo-27.jpg',
+      'photo-28.jpg',
+      'photo-33.jpg',
+      'photo-34.jpg',
+      'photo-36.jpg',
+      'photo-41.jpg',
+      'photo-43.jpg',
+      'photo-44.jpg',
+      'photo-46.jpg',
+      'photo-49.jpg',
+    ].map(name => `${PHOTO_BASE_URL}${name}?v=${PHOTO_VERSION}`);
 
     const CHAPTERS = [
       {
@@ -883,6 +1002,75 @@
     ];
 
     const storyRoot = document.getElementById('story-chapters');
+    const coverPhoto = document.querySelector('.cover-photo');
+    const photoLightbox = document.getElementById('photo-lightbox');
+    const photoLightboxImage = document.getElementById('photo-lightbox-image');
+    const photoLightboxCaption = document.getElementById('photo-lightbox-caption');
+    const photoLightboxClose = document.getElementById('photo-lightbox-close');
+    const photoLightboxPrev = document.getElementById('photo-lightbox-prev');
+    const photoLightboxNext = document.getElementById('photo-lightbox-next');
+    let activePhotoIndex = -1;
+    let photoLightboxRestoreFocus = null;
+
+    function updatePhotoLightbox() {
+      if (activePhotoIndex < 0) return;
+      const photo = PHOTO_URLS[activePhotoIndex];
+      photoLightboxImage.src = photo;
+      photoLightboxImage.alt = `婚礼照片 ${activePhotoIndex + 1}`;
+      photoLightboxCaption.textContent = `${activePhotoIndex + 1} / ${PHOTO_URLS.length}`;
+    }
+
+    function openPhotoLightbox(index, alt) {
+      activePhotoIndex = Number.isInteger(index) ? index : -1;
+      if (activePhotoIndex < 0 || activePhotoIndex >= PHOTO_URLS.length) return;
+      photoLightboxRestoreFocus = document.activeElement;
+      photoLightboxImage.alt = alt || `婚礼照片 ${activePhotoIndex + 1}`;
+      updatePhotoLightbox();
+      photoLightbox.classList.add('is-open');
+      photoLightbox.setAttribute('aria-hidden', 'false');
+      document.body.dataset.photoLightboxOpen = 'true';
+      document.body.style.overflow = 'hidden';
+      photoLightboxClose.focus();
+    }
+
+    function closePhotoLightbox() {
+      photoLightbox.classList.remove('is-open');
+      photoLightbox.setAttribute('aria-hidden', 'true');
+      photoLightboxImage.removeAttribute('src');
+      document.body.style.overflow = '';
+      delete document.body.dataset.photoLightboxOpen;
+      if (photoLightboxRestoreFocus && typeof photoLightboxRestoreFocus.focus === 'function') photoLightboxRestoreFocus.focus();
+      photoLightboxRestoreFocus = null;
+    }
+
+    function stepPhotoLightbox(step) {
+      if (activePhotoIndex < 0) return;
+      activePhotoIndex = (activePhotoIndex + step + PHOTO_URLS.length) % PHOTO_URLS.length;
+      updatePhotoLightbox();
+    }
+
+    photoLightbox.addEventListener('click', event => {
+      if (event.target === photoLightbox || event.target === photoLightboxImage) closePhotoLightbox();
+    });
+    photoLightboxClose.addEventListener('click', closePhotoLightbox);
+    photoLightboxPrev.addEventListener('click', () => stepPhotoLightbox(-1));
+    photoLightboxNext.addEventListener('click', () => stepPhotoLightbox(1));
+    coverPhoto.tabIndex = 0;
+    coverPhoto.setAttribute('role', 'button');
+    coverPhoto.setAttribute('aria-label', '点击放大：新人在雪山花环前的主婚纱照');
+    coverPhoto.addEventListener('click', () => openPhotoLightbox(19, coverPhoto.alt));
+    coverPhoto.addEventListener('keydown', event => {
+      if (event.key === 'Enter' || event.key === ' ') {
+        event.preventDefault();
+        openPhotoLightbox(19, coverPhoto.alt);
+      }
+    });
+    document.addEventListener('keydown', event => {
+      if (!photoLightbox.classList.contains('is-open')) return;
+      if (event.key === 'Escape') closePhotoLightbox();
+      if (event.key === 'ArrowLeft') stepPhotoLightbox(-1);
+      if (event.key === 'ArrowRight') stepPhotoLightbox(1);
+    });
 
     function createPhotoFigure(item, chapterIndex) {
       const figure = document.createElement('figure');
@@ -892,8 +1080,19 @@
       const img = document.createElement('img');
       img.src = PHOTO_URLS[item.i];
       img.alt = item.caption || `婚礼照片 ${item.i + 1}`;
-      img.loading = 'lazy';
+      img.loading = 'eager';
       img.decoding = 'async';
+      img.tabIndex = 0;
+      img.setAttribute('role', 'button');
+      img.setAttribute('aria-label', `点击放大：${img.alt}`);
+      img.dataset.photoIndex = String(item.i);
+      img.addEventListener('click', () => openPhotoLightbox(item.i, img.alt));
+      img.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          openPhotoLightbox(item.i, img.alt);
+        }
+      });
       if (item.position) img.style.objectPosition = item.position;
       const caption = document.createElement('figcaption');
       caption.textContent = item.caption || '我们的照片';
